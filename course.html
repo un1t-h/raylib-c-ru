@@ -1,0 +1,3154 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>raylib на C — курс на русском</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F5F5; --card:#FFFFFF; --ink:#171717; --muted:#6E6E6E; --rule:#E2E2E2;
+  --accent:#00517C; --accent-soft:#E8F0F5;
+  --code-bg:#16191D; --code-ink:#D8DEE6;
+  --sans:"IBM Plex Sans",system-ui,sans-serif;
+  --cond:"IBM Plex Sans Condensed","IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --sidebar:300px;
+}
+*{box-sizing:border-box}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.62 var(--sans);-webkit-font-smoothing:antialiased}
+
+/* ---------- Оглавление ---------- */
+#toc{
+  position:fixed;inset:0 auto 0 0;width:var(--sidebar);background:var(--card);
+  border-right:1px solid var(--rule);overflow-y:auto;padding:26px 0 60px;z-index:40;
+}
+.brand{padding:0 22px 20px;border-bottom:1px solid var(--rule);margin-bottom:14px}
+.brand .eyebrow{font:500 10px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.brand h1{font:700 30px/0.95 var(--cond);letter-spacing:-.02em;margin:10px 0 0}
+.brand .sub{font-size:12.5px;color:var(--muted);margin-top:7px;line-height:1.4}
+.part-label{font:600 10px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:20px 22px 8px}
+#toc a{
+  display:flex;gap:11px;align-items:baseline;padding:7px 22px;text-decoration:none;color:#333;
+  font-size:14.2px;line-height:1.35;border-left:3px solid transparent;
+}
+#toc a .n{font:500 11px var(--mono);color:#A8A8A8;flex:none;width:17px}
+#toc a:hover{background:#FAFAFA;color:var(--ink)}
+#toc a.on{background:var(--accent-soft);border-left-color:var(--accent);color:var(--accent);font-weight:500}
+#toc a.on .n{color:var(--accent)}
+#toc a.done .n::after{content:"·"}
+
+/* ---------- Контент ---------- */
+main{margin-left:var(--sidebar);padding:0 0 100px}
+.sheet{max-width:760px;margin:0 auto;padding:0 32px}
+.ch{display:none;padding-top:52px}
+.ch.show{display:block;animation:in .18s ease-out}
+@keyframes in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.ch-meta{display:flex;align-items:center;gap:12px;font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.ch-meta .num{background:var(--ink);color:#fff;padding:5px 8px;border-radius:2px;letter-spacing:.05em}
+h2{font:700 clamp(30px,5vw,44px)/1.06 var(--cond);letter-spacing:-.02em;margin:16px 0 6px}
+h3{font:600 21px/1.25 var(--cond);letter-spacing:-.01em;margin:38px 0 10px}
+h4{font:600 15px/1.3 var(--sans);margin:26px 0 8px}
+p{margin:0 0 15px}
+ul,ol{margin:0 0 15px;padding-left:22px}
+li{margin-bottom:6px}
+a{color:var(--accent)}
+b,strong{font-weight:600}
+code{font:500 13.5px var(--mono);background:#EAEAEA;padding:1px 5px;border-radius:3px;word-break:break-word}
+pre{
+  background:var(--code-bg);color:var(--code-ink);border-radius:4px;
+  padding:16px 18px;overflow-x:auto;margin:0 0 18px;font-size:13.2px;line-height:1.62;
+}
+pre code{background:none;padding:0;font-weight:400;color:inherit;font-size:inherit;white-space:pre}
+pre .cmt{color:#6C7580;font-style:italic}
+pre .str{color:#9DD28B}
+pre .pre{color:#C99BE0}
+pre .kw{color:#6FB4E8}
+pre .typ{color:#E8C07A}
+pre .num{color:#E8A0A0}
+.filename{
+  font:500 11.5px var(--mono);color:var(--muted);background:#E9E9E9;
+  display:inline-block;padding:4px 9px;border-radius:3px 3px 0 0;margin-bottom:0;
+}
+.filename + pre{border-radius:0 4px 4px 4px}
+
+.note,.warn,.tip{border-left:3px solid;padding:13px 16px;margin:0 0 18px;font-size:14.6px;border-radius:0 3px 3px 0}
+.note{border-color:var(--accent);background:var(--accent-soft)}
+.warn{border-color:#BE2137;background:#FCEDEE}
+.tip{border-color:#00752C;background:#EAF4EC}
+.note p:last-child,.warn p:last-child,.tip p:last-child{margin-bottom:0}
+.note b,.warn b,.tip b{font-weight:600}
+
+table{border-collapse:collapse;width:100%;margin:0 0 18px;font-size:14.2px}
+th,td{border:1px solid var(--rule);padding:8px 11px;text-align:left;vertical-align:top}
+th{background:#F0F0F0;font-weight:600;font-size:13px}
+td code{font-size:12.8px}
+
+.task{border:1px solid var(--rule);background:var(--card);border-radius:3px;padding:16px 18px;margin:26px 0 0}
+.task .h{font:600 11px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
+.task ul{margin-bottom:0}
+
+.pager{display:flex;justify-content:space-between;gap:14px;margin:52px 0 0;padding-top:22px;border-top:1px solid var(--rule)}
+.pager button{
+  font:500 14px var(--sans);background:var(--card);border:1px solid var(--rule);color:var(--ink);
+  padding:11px 16px;border-radius:3px;cursor:pointer;max-width:47%;text-align:left;line-height:1.3;
+}
+.pager button:hover:not(:disabled){border-color:#B0B0B0}
+.pager button:disabled{opacity:.35;cursor:default}
+.pager button span{display:block;font:500 10px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.pager .next{text-align:right}
+
+/* ---------- Мобильный ---------- */
+#burger{
+  display:none;position:fixed;top:12px;left:12px;z-index:60;
+  background:var(--card);border:1px solid var(--rule);border-radius:3px;
+  padding:9px 13px;font:600 13px var(--sans);cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.08);
+}
+#scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:35}
+@media (max-width:900px){
+  body{font-size:15.5px}
+  #burger{display:block}
+  #scrim.open{display:block}
+  #toc{transform:translateX(-100%);transition:transform .2s;width:290px;box-shadow:2px 0 16px rgba(0,0,0,.1)}
+  #toc.open{transform:none}
+  main{margin-left:0}
+  .sheet{padding:0 18px}
+  .ch{padding-top:64px}
+  pre{font-size:12.4px;padding:14px}
+  .pager button{max-width:48%;padding:10px 12px;font-size:13px}
+}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<button id="burger" aria-label="Оглавление">☰ Главы</button>
+<div id="scrim"></div>
+
+<nav id="toc">
+  <div class="brand">
+    <a href="index.html" style="font:500 11px var(--mono);color:var(--muted);text-decoration:none;letter-spacing:.05em">← raylib-ru</a>
+    <div class="eyebrow" style="margin-top:14px">Курс · C · 2D-графика</div>
+    <h1>raylib<br>с нуля</h1>
+    <div class="sub">Двадцать глав от пустого окна до собранной игры. Весь код на чистом C.</div>
+  </div>
+  <div id="toc-list"></div>
+</nav>
+
+<main>
+<div class="sheet" id="sheet">
+<article class="ch" id="ch01" data-part="Часть I · Начало" data-title="Установка и первая программа">
+<div class="ch-meta"><span class="num">01</span><span>Часть I · Начало</span></div>
+<h2>Установка и первая программа</h2>
+
+<p>raylib — это библиотека на C для 2D- и 3D-графики, звука и ввода. Не движок: здесь нет редактора сцен, дерева объектов, компонентов и системы ассетов. Есть примерно 600 функций вида «нарисуй текстуру вот тут» и «нажата ли клавиша». Всю остальную структуру программы вы пишете сами.</p>
+
+<p>Это одновременно её главный плюс и минус. Плюс — вы понимаете каждую строчку своей игры и ничего не отлаживаете вслепую внутри чужого движка. Минус — никто не сделает за вас ни редактор уровней, ни систему сохранений.</p>
+
+<h3>Установка</h3>
+
+<p>В Arch и производных (CachyOS, EndeavourOS, Manjaro) библиотека есть в основном репозитории:</p>
+
+<pre><code>sudo pacman -S raylib</code></pre>
+
+<p>Debian и Ubuntu: пакет <code>libraylib-dev</code> в репозиториях обычно сильно устаревший, лучше собрать из исходников. Fedora — <code>sudo dnf install raylib-devel</code>. Windows — с сайта raylib.com есть инсталлятор, который ставит компилятор w64devkit и уже настроенное окружение.</p>
+
+<p>Сборка из исходников на любом Linux:</p>
+
+<pre><code>git clone --depth 1 https://github.com/raysan5/raylib.git
+cd raylib
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON
+cmake --build build -j$(nproc)
+sudo cmake --install build</code></pre>
+
+<h3>Первая программа</h3>
+
+<p>Создайте файл <code>main.c</code>:</p>
+
+<div class="filename">main.c</div>
+<pre><code>#include &lt;raylib.h&gt;
+
+int main(void)
+{
+    InitWindow(800, 450, "Первое окно");
+    SetTargetFPS(60);
+
+    while (!WindowShouldClose())
+    {
+        BeginDrawing();
+            ClearBackground(RAYWHITE);
+            DrawText("raylib works", 260, 200, 30, DARKGRAY);
+        EndDrawing();
+    }
+
+    CloseWindow();
+    return 0;
+}</code></pre>
+
+<p>Компиляция:</p>
+
+<pre><code>gcc main.c -o game $(pkg-config --libs --cflags raylib)
+./game</code></pre>
+
+<p>Должно появиться белое окно 800×450 с надписью. Закрывается по Escape или по крестику.</p>
+
+<div class="note"><p><b>Почему <code>pkg-config</code>.</b> raylib тянет за собой математику, потоки, динамическую загрузку и системную графику. Без pkg-config строку линковки пришлось бы писать руками: <code>-lraylib -lGL -lm -lpthread -ldl -lrt -lX11</code>. Pkg-config подставит правильный набор для вашей системы сам.</p></div>
+
+<h3>Что делает каждая строка</h3>
+
+<table>
+<tr><th>Строка</th><th>Смысл</th></tr>
+<tr><td><code>InitWindow(w, h, title)</code></td><td>Создаёт окно и контекст OpenGL. До этого вызова нельзя делать вообще ничего графического — ни грузить текстуры, ни шрифты.</td></tr>
+<tr><td><code>SetTargetFPS(60)</code></td><td>Просит raylib притормаживать цикл, чтобы кадров было не больше шестидесяти в секунду. Без него программа сожрёт всё ядро процессора.</td></tr>
+<tr><td><code>WindowShouldClose()</code></td><td>Возвращает <code>true</code>, если нажали Escape или крестик. Заодно внутри себя опрашивает события ввода.</td></tr>
+<tr><td><code>BeginDrawing()</code></td><td>Начинает кадр: подготавливает буфер для рисования.</td></tr>
+<tr><td><code>ClearBackground(RAYWHITE)</code></td><td>Заливает кадр цветом. Без этого на экране останется мусор от предыдущего кадра.</td></tr>
+<tr><td><code>EndDrawing()</code></td><td>Заканчивает кадр, показывает его на экране и, если задан целевой FPS, ждёт нужное время.</td></tr>
+<tr><td><code>CloseWindow()</code></td><td>Освобождает окно и контекст. Вызывается один раз при выходе.</td></tr>
+</table>
+
+<div class="warn"><p><b>Частая ошибка.</b> Попытка загрузить текстуру или шрифт до <code>InitWindow</code>. Видеопамяти ещё нет, и загрузка молча вернёт пустой объект. На экране будет либо белый прямоугольник, либо ничего.</p></div>
+
+<h3>Makefile, чтобы не набирать команду каждый раз</h3>
+
+<div class="filename">Makefile</div>
+<pre><code>CFLAGS = -Wall -Wextra -g $(shell pkg-config --cflags raylib)
+LDLIBS = $(shell pkg-config --libs raylib)
+
+game: main.c
+	gcc main.c -o game $(CFLAGS) $(LDLIBS)
+
+run: game
+	./game
+
+clean:
+	rm -f game
+
+.PHONY: run clean</code></pre>
+
+<p>Теперь <code>make run</code> собирает и запускает. Обратите внимание: перед командами в Makefile должна стоять табуляция, а не пробелы — это классическая причина ошибки «missing separator».</p>
+
+<div class="tip"><p><b>Флаги, которые стоит включить сразу.</b> <code>-Wall -Wextra</code> заставят компилятор сообщать о подозрительных местах: неиспользованная переменная, сравнение знакового с беззнаковым, забытый <code>return</code>. В C такие мелочи оборачиваются часами отладки. <code>-g</code> добавляет отладочную информацию для gdb.</p></div>
+
+<div class="task"><div class="h">Проверьте себя</div><ul>
+<li>Поменяйте размер окна и цвет фона (попробуйте <code>DARKBLUE</code>, <code>BEIGE</code>, <code>BLACK</code>).</li>
+<li>Выведите вторую строку текста ниже первой другим цветом.</li>
+<li>Уберите <code>ClearBackground</code> и посмотрите, что будет. Потом верните.</li>
+</ul></div>
+
+<div class="pager"></div>
+</article>
+
+
+<article class="ch" id="ch02" data-part="Часть I · Начало" data-title="Игровой цикл и кадр">
+<div class="ch-meta"><span class="num">02</span><span>Часть I · Начало</span></div>
+<h2>Игровой цикл и кадр</h2>
+
+<p>Игра — это не программа, которая ждёт действий пользователя. Это программа, которая шестьдесят раз в секунду пересчитывает состояние мира и рисует его заново. Даже если ничего не происходит и никто не нажимает кнопки, цикл всё равно крутится.</p>
+
+<p>Один проход цикла называется кадром. Внутри кадра всегда происходит одно и то же:</p>
+
+<pre><code>while (!WindowShouldClose())
+{
+    // 1. Обновление: посчитать новое состояние мира
+    //    (движение, физика, реакция на ввод, таймеры)
+
+    // 2. Отрисовка: показать это состояние
+    BeginDrawing();
+        ClearBackground(RAYWHITE);
+        // ... рисуем всё
+    EndDrawing();
+}</code></pre>
+
+<div class="note"><p><b>Держите эти две фазы раздельно.</b> Пока программа маленькая, кажется естественным двигать объект прямо в момент его отрисовки. Как только объектов станет десяток, это начнёт создавать труднообъяснимые баги: один объект уже сдвинулся, другой ещё нет, а третий проверяет столкновение с ними обоими и получает противоречивую картину.</p></div>
+
+<h3>Порядок отрисовки</h3>
+
+<p>Никакого z-порядка в raylib нет. Что нарисовано позже — то поверх. Художник кладёт краску слоями, здесь то же самое:</p>
+
+<pre><code>BeginDrawing();
+    ClearBackground(RAYWHITE);
+
+    DrawRectangle(0, 300, 800, 150, DARKGREEN);   // земля
+    DrawCircle(400, 280, 40, RED);                // игрок поверх земли
+    DrawText("Счёт: 0", 20, 20, 24, BLACK);       // интерфейс поверх всего
+
+EndDrawing();</code></pre>
+
+<p>Поменяйте местами землю и игрока — игрок исчезнёт под зелёным прямоугольником. Отсюда практическое правило: сначала фон, потом мир, потом интерфейс. И интерфейс всегда рисуется последним.</p>
+
+<h3>Что происходит внутри EndDrawing</h3>
+
+<p>Эта функция делает больше, чем кажется. Она отправляет накопленные команды рисования видеокарте, меняет местами буферы (то, что вы рисовали, становится видимым), опрашивает системные события и, если задан <code>SetTargetFPS</code>, засыпает на остаток кадра.</p>
+
+<p>Именно поэтому нельзя рисовать вне пары <code>BeginDrawing</code>/<code>EndDrawing</code>. Команда просто уйдёт в пустоту.</p>
+
+<h3>Отладочная информация</h3>
+
+<p>В любой момент разработки полезно видеть, сколько кадров реально успевает отрисоваться:</p>
+
+<pre><code>DrawFPS(10, 10);</code></pre>
+
+<p>Если вместо 60 вы видите 300 — вы забыли <code>SetTargetFPS</code>. Если видите 12 — что-то в цикле работает слишком медленно, и стоит разобраться, что именно, до того как добавлять новый функционал.</p>
+
+<h3>Каркас, с которого стоит начинать любой проект</h3>
+
+<div class="filename">main.c</div>
+<pre><code>#include &lt;raylib.h&gt;
+
+#define SCREEN_W 800
+#define SCREEN_H 450
+
+int main(void)
+{
+    InitWindow(SCREEN_W, SCREEN_H, "Каркас");
+    SetTargetFPS(60);
+
+    // --- Загрузка ресурсов ---
+    // текстуры, шрифты, звуки грузятся здесь, один раз
+
+    while (!WindowShouldClose())
+    {
+        // --- Обновление ---
+
+        // --- Отрисовка ---
+        BeginDrawing();
+            ClearBackground(RAYWHITE);
+            DrawFPS(10, 10);
+        EndDrawing();
+    }
+
+    // --- Выгрузка ресурсов ---
+    // здесь Unload* для всего, что грузили выше
+
+    CloseWindow();
+    return 0;
+}</code></pre>
+
+<div class="warn"><p><b>Никогда не грузите ресурсы внутри цикла.</b> <code>LoadTexture</code> в теле <code>while</code> будет загружать файл с диска шестьдесят раз в секунду и каждый раз выделять новую видеопамять, не освобождая старую. Через полминуты игра съест несколько гигабайт и упадёт. Это одна из самых частых ошибок у тех, кто пришёл из движков, где загрузка спрятана от программиста.</p></div>
+
+<div class="task"><div class="h">Проверьте себя</div><ul>
+<li>Соберите каркас и добавьте <code>DrawFPS</code>. Уберите <code>SetTargetFPS</code> — посмотрите, какие цифры покажет ваша видеокарта.</li>
+<li>Нарисуйте три перекрывающихся круга разного цвета и убедитесь, что порядок вызовов определяет, кто сверху.</li>
+</ul></div>
+
+<div class="pager"></div>
+</article>
+
+
+<article class="ch" id="ch03" data-part="Часть I · Начало" data-title="Координаты, фигуры, цвет">
+<div class="ch-meta"><span class="num">03</span><span>Часть I · Начало</span></div>
+<h2>Координаты, фигуры, цвет</h2>
+
+<h3>Система координат</h3>
+
+<p>Начало координат — левый верхний угол окна. X растёт вправо, Y растёт <b>вниз</b>. Это не математическая система координат из школы, и первое время это сбивает: чтобы объект поднялся вверх, его Y надо уменьшать.</p>
+
+<pre><code>(0,0) ────────────────► X
+  │
+  │     ● (300, 120)
+  │
+  ▼
+  Y</code></pre>
+
+<h3>Базовые типы</h3>
+
+<p>Почти всё в raylib построено на четырёх простых структурах:</p>
+
+<pre><code>typedef struct Vector2 { float x, y; } Vector2;
+
+typedef struct Rectangle { float x, y, width, height; } Rectangle;
+
+typedef struct Color {
+    unsigned char r, g, b, a;   // 0..255, a — прозрачность
+} Color;</code></pre>
+
+<p>Обратите внимание: у <code>Rectangle</code> поля <code>x</code> и <code>y</code> — это левый верхний угол, а не центр. У круга же в <code>DrawCircle</code> координата — это как раз центр. Разное поведение у разных фигур, к этому надо привыкнуть.</p>
+
+<p>Создаются структуры обычными списками инициализации C:</p>
+
+<pre><code>Vector2 pos = { 100.0f, 50.0f };
+Rectangle box = { 20, 20, 120, 60 };
+Color myColor = { 255, 100, 20, 255 };
+
+// или с указанием полей — читается лучше
+Rectangle hitbox = { .x = 20, .y = 20, .width = 120, .height = 60 };</code></pre>
+
+<h3>Фигуры</h3>
+
+<pre><code>// Прямоугольники
+DrawRectangle(50, 50, 200, 100, RED);              // x, y, ширина, высота
+DrawRectangleRec(box, BLUE);                        // из Rectangle
+DrawRectangleLines(50, 50, 200, 100, BLACK);        // только контур
+DrawRectangleLinesEx(box, 3, BLACK);                // контур толщиной 3
+DrawRectangleRounded(box, 0.3f, 8, ORANGE);         // скруглённые углы
+
+// Круги и эллипсы
+DrawCircle(400, 200, 50, GREEN);                    // центр x, центр y, радиус
+DrawCircleV(pos, 50, GREEN);                        // центр как Vector2
+DrawCircleLines(400, 200, 50, DARKGREEN);
+DrawEllipse(400, 200, 80, 40, PURPLE);
+
+// Линии
+DrawLine(0, 0, 800, 450, GRAY);
+DrawLineEx((Vector2){0,0}, (Vector2){800,450}, 4, GRAY);   // с толщиной
+
+// Треугольник — вершины ПРОТИВ часовой стрелки
+DrawTriangle((Vector2){400,100}, (Vector2){350,200}, (Vector2){450,200}, MAROON);
+
+// Правильный многоугольник
+DrawPoly((Vector2){400,225}, 6, 60, 0, VIOLET);     // центр, сторон, радиус, угол</code></pre>
+
+<div class="warn"><p><b>Треугольник не рисуется?</b> Проверьте порядок вершин. raylib отсекает грани, у которых вершины идут по часовой стрелке. Поменяйте местами вторую и третью — появится.</p></div>
+
+<h3>Суффиксы в именах</h3>
+
+<p>Раз поняв систему суффиксов, вы перестанете лазить в документацию по каждой мелочи. Она одинакова во всей библиотеке:</p>
+
+<table>
+<tr><th>Суффикс</th><th>Что значит</th><th>Пример</th></tr>
+<tr><td>—</td><td>базовая версия, координаты по отдельности</td><td><code>DrawCircle(x, y, r, c)</code></td></tr>
+<tr><td><code>V</code></td><td>принимает <code>Vector2</code> вместо пары чисел</td><td><code>DrawCircleV(pos, r, c)</code></td></tr>
+<tr><td><code>Rec</code></td><td>принимает <code>Rectangle</code></td><td><code>DrawRectangleRec(box, c)</code></td></tr>
+<tr><td><code>Ex</code></td><td>расширенная: обычно добавляет толщину, поворот или масштаб</td><td><code>DrawLineEx(a, b, thick, c)</code></td></tr>
+<tr><td><code>Pro</code></td><td>максимально гибкая: точка вращения, угол, произвольная область</td><td><code>DrawTexturePro(...)</code></td></tr>
+<tr><td><code>Lines</code></td><td>контур вместо заливки</td><td><code>DrawCircleLines(...)</code></td></tr>
+</table>
+
+<h3>Цвет</h3>
+
+<p>В raylib есть готовый набор именованных цветов. Их удобно использовать, пока не дошли до подбора собственной палитры:</p>
+
+<p><code>RAYWHITE</code>, <code>WHITE</code>, <code>BLACK</code>, <code>BLANK</code> (полностью прозрачный), <code>LIGHTGRAY</code>, <code>GRAY</code>, <code>DARKGRAY</code>, <code>YELLOW</code>, <code>GOLD</code>, <code>ORANGE</code>, <code>PINK</code>, <code>RED</code>, <code>MAROON</code>, <code>GREEN</code>, <code>LIME</code>, <code>DARKGREEN</code>, <code>SKYBLUE</code>, <code>BLUE</code>, <code>DARKBLUE</code>, <code>PURPLE</code>, <code>VIOLET</code>, <code>DARKPURPLE</code>, <code>BEIGE</code>, <code>BROWN</code>, <code>DARKBROWN</code>, <code>MAGENTA</code>.</p>
+
+<p>Свои цвета задаются либо напрямую, либо из шестнадцатеричного значения:</p>
+
+<pre><code>Color night   = { 18, 22, 34, 255 };
+Color fromHex = GetColor(0x1E90FFFF);        // 0xRRGGBBAA — альфа обязательна
+
+// Прозрачность
+DrawCircle(400, 200, 60, Fade(RED, 0.4f));   // тот же красный, 40% непрозрачности
+
+// Полезные преобразования
+Color darker  = ColorBrightness(BLUE, -0.3f);      // затемнить
+Color mixed   = ColorLerp(RED, BLUE, 0.5f);        // смешать пополам
+Color rainbow = ColorFromHSV(hue, 0.8f, 1.0f);     // тон в градусах 0..360</code></pre>
+
+<div class="tip"><p><b><code>ColorFromHSV</code> — быстрый способ получить приятную палитру.</b> Зафиксируйте насыщенность и яркость, меняйте только тон: цвета будут разными, но одинаковой «плотности» и не начнут ссориться друг с другом, как это бывает при подборе RGB на глаз.</p></div>
+
+<div class="task"><div class="h">Проверьте себя</div><ul>
+<li>Нарисуйте домик: прямоугольник-стена, треугольник-крыша, квадратик-окно.</li>
+<li>Сделайте радугу из семи прямоугольников через <code>ColorFromHSV</code> в цикле.</li>
+<li>Нарисуйте три полупрозрачных круга через <code>Fade</code> так, чтобы было видно наложение.</li>
+</ul></div>
+
+<div class="pager"></div>
+</article>
+
+
+<article class="ch" id="ch04" data-part="Часть I · Начало" data-title="Время и движение">
+<div class="ch-meta"><span class="num">04</span><span>Часть I · Начало</span></div>
+<h2>Время и движение</h2>
+
+<p>Самая распространённая ошибка новичка выглядит так:</p>
+
+<pre><code>x += 5;   // двигаем героя вправо</code></pre>
+
+<p>На вашей машине при 60 FPS герой пройдёт 300 пикселей в секунду. У человека с монитором 144 Гц — 720 пикселей. На слабом ноутбуке, где игра проседает до 30 кадров, — 150. Игра станет буквально разной игрой на разном железе.</p>
+
+<h3>Дельта-время</h3>
+
+<p>Решение — считать скорость в пикселях за <b>секунду</b>, а не за кадр, и умножать на длительность кадра:</p>
+
+<pre><code>float speed = 300.0f;                // пикселей в секунду
+float dt = GetFrameTime();           // сколько секунд длился прошлый кадр
+
+x += speed * dt;</code></pre>
+
+<p>При 60 FPS <code>dt</code> ≈ 0.0166, и за кадр герой сдвинется на 5 пикселей. При 144 FPS <code>dt</code> ≈ 0.0069, сдвиг будет 2.1 пикселя — но и кадров больше. За секунду в обоих случаях получится ровно 300 пикселей.</p>
+
+<div class="note"><p><b>Правило.</b> Всё, что меняется со временем — позиция, скорость, угол поворота, таймеры, накопление энергии — умножается на <code>dt</code>. Всё, что происходит одномоментно по событию — выстрел по нажатию, +10 очков за монету — на <code>dt</code> не умножается.</p></div>
+
+<h3>Живой пример</h3>
+
+<div class="filename">main.c</div>
+<pre><code>#include &lt;raylib.h&gt;
+
+int main(void)
+{
+    InitWindow(800, 450, "Мяч");
+    SetTargetFPS(60);
+
+    Vector2 pos = { 400, 225 };
+    Vector2 vel = { 260, 190 };     // пикселей в секунду по каждой оси
+    float radius = 25;
+
+    while (!WindowShouldClose())
+    {
+        float dt = GetFrameTime();
+
+        pos.x += vel.x * dt;
+        pos.y += vel.y * dt;
+
+        // Отскок от краёв
+        if (pos.x + radius &gt;= GetScreenWidth()  || pos.x - radius &lt;= 0) vel.x *= -1;
+        if (pos.y + radius &gt;= GetScreenHeight() || pos.y - radius &lt;= 0) vel.y *= -1;
+
+        BeginDrawing();
+            ClearBackground(RAYWHITE);
+            DrawCircleV(pos, radius, MAROON);
+            DrawFPS(10, 10);
+        EndDrawing();
+    }
+
+    CloseWindow();
+    return 0;
+}</code></pre>
+
+<p>Скорость хранится как <code>Vector2</code>: две компоненты, по одной на ось. Отскок — это просто смена знака у соответствующей компоненты. Такая модель «позиция плюс скорость» лежит в основе почти любого движения в 2D-играх.</p>
+
+<h3>Ускорение и гравитация</h3>
+
+<p>Если скорость сама меняется со временем — это ускорение. Гравитация выражается одной строкой:</p>
+
+<pre><code>const float GRAVITY = 900.0f;    // пикселей в секунду за секунду
+
+vel.y += GRAVITY * dt;           // скорость растёт вниз
+pos.y += vel.y * dt;             // позиция меняется по скорости
+
+if (pos.y &gt; floorY) {
+    pos.y = floorY;
+    vel.y *= -0.7f;              // отскок с потерей 30% энергии
+}</code></pre>
+
+<p>Порядок важен: сначала обновляем скорость, потом позицию. Если поменять местами, движение будет отставать на кадр — на глаз почти незаметно, но при быстрых объектах даёт неприятную «резину».</p>
+
+<h3>Таймеры</h3>
+
+<p>Таймер — это просто <code>float</code>, который накапливает <code>dt</code>:</p>
+
+<pre><code>float shootTimer = 0.0f;
+const float SHOOT_DELAY = 0.25f;    // выстрел раз в четверть секунды
+
+// в обновлении:
+shootTimer += dt;
+if (shootTimer &gt;= SHOOT_DELAY &amp;&amp; IsKeyDown(KEY_SPACE)) {
+    shootTimer = 0.0f;
+    Shoot();
+}</code></pre>
+
+<p>Есть и <code>GetTime()</code> — секунды с момента запуска. Оно удобно для эффектов, которые должны просто «дышать» независимо от игровой логики:</p>
+
+<pre><code>float pulse = sinf(GetTime() * 3.0f);        // колеблется от -1 до 1
+float size  = 40 + pulse * 8;                 // радиус пульсирует
+</code></pre>
+
+<div class="warn"><p><b>Первый кадр.</b> На самом первом проходе цикла <code>GetFrameTime()</code> может вернуть неожиданно большое значение — окно ещё создавалось. Если в игре есть быстрые объекты, это иногда телепортирует их за экран. Страховка — <code>if (dt &gt; 0.05f) dt = 0.05f;</code> в начале обновления. Заодно спасает от ситуации, когда пользователь перетащил окно и игра «замерла» на секунду.</p></div>
+
+<div class="task"><div class="h">Проверьте себя</div><ul>
+<li>Добавьте мячу гравитацию, чтобы он прыгал по полу и постепенно затухал.</li>
+<li>Сделайте квадрат, который вращается: <code>angle += 90 * dt</code> и <code>DrawRectanglePro</code>.</li>
+<li>Сделайте таймер, который каждые две секунды меняет цвет фона на случайный.</li>
+</ul></div>
+
+<div class="pager"></div>
+</article>
+
+
+<article class="ch" id="ch05" data-part="Часть I · Начало" data-title="Ввод: клавиатура и мышь">
+<div class="ch-meta"><span class="num">05</span><span>Часть I · Начало</span></div>
+<h2>Ввод: клавиатура и мышь</h2>
+
+<h3>Down против Pressed</h3>
+
+<p>Это различие важнее, чем кажется, и путаница в нём даёт баги, которые сложно объяснить.</p>
+
+<table>
+<tr><th>Функция</th><th>Когда истинна</th><th>Для чего</th></tr>
+<tr><td><code>IsKeyDown</code></td><td>каждый кадр, пока клавишу держат</td><td>движение, удержание газа, зажатый огонь</td></tr>
+<tr><td><code>IsKeyPressed</code></td><td>ровно один кадр — в момент нажатия</td><td>прыжок, пауза, выбор в меню, переключение</td></tr>
+<tr><td><code>IsKeyReleased</code></td><td>ровно один кадр — в момент отпускания</td><td>отпустить натянутый лук, закончить заряд</td></tr>
+<tr><td><code>IsKeyUp</code></td><td>каждый кадр, пока клавиша не нажата</td><td>проверки «пока не держит»</td></tr>
+</table>
+
+<p>Если прыжок повесить на <code>IsKeyDown(KEY_SPACE)</code>, персонаж будет прыгать шестьдесят раз в секунду, пока клавиша зажата, и улетит в потолок. Если движение повесить на <code>IsKeyPressed(KEY_D)</code> — герой сдвинется на один шаг и встанет.</p>
+
+<h3>Движение персонажа</h3>
+
+<pre><code>float speed = 320.0f;
+float dt = GetFrameTime();
+
+if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) pos.x += speed * dt;
+if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))  pos.x -= speed * dt;
+if (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))    pos.y -= speed * dt;
+if (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN))  pos.y += speed * dt;</code></pre>
+
+<div class="warn"><p><b>Диагональ быстрее прямой.</b> Нажав D и W одновременно, герой сдвинется на <code>speed*dt</code> по каждой оси, то есть суммарно в 1.41 раза быстрее. В экшенах это заметно и считается багом. Исправляется нормализацией вектора направления — вернёмся к этому в главе про <code>raymath</code>.</p></div>
+
+<h3>Более аккуратная форма записи</h3>
+
+<p>Вместо четырёх независимых <code>if</code> удобнее собрать вектор направления:</p>
+
+<pre><code>Vector2 dir = { 0, 0 };
+if (IsKeyDown(KEY_D)) dir.x += 1;
+if (IsKeyDown(KEY_A)) dir.x -= 1;
+if (IsKeyDown(KEY_S)) dir.y += 1;
+if (IsKeyDown(KEY_W)) dir.y -= 1;
+
+pos.x += dir.x * speed * dt;
+pos.y += dir.y * speed * dt;</code></pre>
+
+<p>Нажатие A и D одновременно даст <code>dir.x == 0</code> — персонаж просто остановится, что интуитивно правильно. И теперь есть отдельная переменная направления, которую можно использовать ещё где-то: развернуть спрайт, выбрать анимацию, задать направление выстрела.</p>
+
+<h3>Коды клавиш</h3>
+
+<p>Буквы — <code>KEY_A</code> … <code>KEY_Z</code>, цифры — <code>KEY_ZERO</code> … <code>KEY_NINE</code>. Остальное: <code>KEY_SPACE</code>, <code>KEY_ENTER</code>, <code>KEY_ESCAPE</code>, <code>KEY_TAB</code>, <code>KEY_BACKSPACE</code>, <code>KEY_LEFT_SHIFT</code>, <code>KEY_LEFT_CONTROL</code>, <code>KEY_LEFT_ALT</code>, <code>KEY_UP</code>/<code>DOWN</code>/<code>LEFT</code>/<code>RIGHT</code>, <code>KEY_F1</code> … <code>KEY_F12</code>.</p>
+
+<div class="note"><p><b>Коды привязаны к физической позиции клавиши, а не к раскладке.</b> <code>KEY_W</code> сработает и когда включена русская раскладка, и на французской AZERTY-клавиатуре (там эта клавиша подписана «Z»). Для игры это правильное поведение — управление не ломается при переключении языка.</p></div>
+
+<h3>Текстовый ввод</h3>
+
+<p>Для полей ввода коды клавиш не годятся — нужны символы с учётом регистра и раскладки. Для этого есть очередь введённых символов:</p>
+
+<pre><code>char name[32] = { 0 };
+int len = 0;
+
+// в обновлении:
+int c = GetCharPressed();
+while (c &gt; 0) {
+    if (c &gt;= 32 &amp;&amp; c &lt;= 126 &amp;&amp; len &lt; 31) {
+        name[len++] = (char)c;
+        name[len] = '\0';
+    }
+    c = GetCharPressed();       // очередь может содержать несколько символов
+}
+
+if (IsKeyPressed(KEY_BACKSPACE) &amp;&amp; len &gt; 0) {
+    name[--len] = '\0';
+}</code></pre>
+
+<p>Цикл <code>while</code> здесь обязателен: за один кадр пользователь может успеть ввести несколько символов, и они лежат в очереди. Если прочитать только один, остальные потеряются.</p>
+
+<h3>Мышь</h3>
+
+<pre><code>Vector2 mouse = GetMousePosition();
+Vector2 delta = GetMouseDelta();            // сдвиг с прошлого кадра
+float wheel   = GetMouseWheelMove();        // прокрутка колеса
+
+if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))  { /* клик */ }
+if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))    { /* держат ПКМ */ }
+if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) { /* отпустили */ }</code></pre>
+
+<p>Кнопки: <code>MOUSE_BUTTON_LEFT</code>, <code>MOUSE_BUTTON_RIGHT</code>, <code>MOUSE_BUTTON_MIDDLE</code>.</p>
+
+<h3>Кнопка целиком</h3>
+
+<p>Собрав вместе проверку попадания и состояния мыши, получаем полноценную кнопку в семь строк:</p>
+
+<pre><code>bool Button(Rectangle rec, const char *label)
+{
+    Vector2 m = GetMousePosition();
+    bool hover = CheckCollisionPointRec(m, rec);
+
+    DrawRectangleRec(rec, hover ? SKYBLUE : LIGHTGRAY);
+    DrawRectangleLinesEx(rec, 2, DARKGRAY);
+
+    int tw = MeasureText(label, 20);
+    DrawText(label, rec.x + (rec.width - tw)/2, rec.y + rec.height/2 - 10, 20, BLACK);
+
+    return hover &amp;&amp; IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
+}
+
+// использование:
+if (Button((Rectangle){300, 200, 200, 50}, "Играть")) {
+    StartGame();
+}</code></pre>
+
+<p>Функция и рисует, и возвращает результат — такой подход называется immediate mode GUI. Никаких объектов кнопок, никакой регистрации обработчиков: кнопка существует ровно в том кадре, в котором вы её вызвали.</p>
+
+<div class="tip"><p><b>Геймпад работает по той же схеме.</b> <code>IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)</code> — это «нажата A на первом геймпаде». Стики читаются через <code>GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_X)</code>, возвращает от -1 до 1.</p></div>
+
+<div class="task"><div class="h">Проверьте себя</div><ul>
+<li>Сделайте квадрат, управляемый WASD, который не может выйти за края экрана.</li>
+<li>Добавьте меню из двух кнопок: «Играть» и «Выход».</li>
+<li>Сделайте так, чтобы по клику мыши на экране появлялся круг в точке клика, а по правой кнопке все круги исчезали.</li>
+</ul></div>
+
+<div class="pager"></div>
+</article>
+<article class="ch" id="ch06" data-part="Часть II · Архитектура" data-title="Структуры вместо классов">
+<div class="ch-meta"><span class="num">06</span><span>Часть II · Архитектура</span></div>
+<h2>Структуры вместо классов</h2>
+
+<p>В C нет классов, наследования, конструкторов и методов. Есть структуры и функции. Оказывается, для игры этого достаточно — просто организация кода получается другой.</p>
+
+<h3>Сущность — это структура</h3>
+
+<div class="filename">player.h</div>
+<pre><code>typedef struct Player {
+    Vector2 pos;
+    Vector2 vel;
+    float   speed;
+    int     health;
+    bool    onGround;
+} Player;</code></pre>
+
+<p>Вместо методов — свободные функции, которые принимают указатель на структуру. По соглашению имя функции начинается с имени типа:</p>
+
+<pre><code>void PlayerInit(Player *p, Vector2 startPos)
+{
+    p-&gt;pos = startPos;
+    p-&gt;vel = (Vector2){ 0, 0 };
+    p-&gt;speed = 320.0f;
+    p-&gt;health = 100;
+    p-&gt;onGround = false;
+}
+
+void PlayerUpdate(Player *p, float dt)
+{
+    if (IsKeyDown(KEY_D)) p-&gt;pos.x += p-&gt;speed * dt;
+    if (IsKeyDown(KEY_A)) p-&gt;pos.x -= p-&gt;speed * dt;
+}
+
+void PlayerDraw(const Player *p)
+{
+    DrawCircleV(p-&gt;pos, 20, MAROON);
+}</code></pre>
+
+<p>Использование выглядит почти как вызов методов:</p>
+
+<pre><code>Player player;
+PlayerInit(&amp;player, (Vector2){400, 225});
+
+while (!WindowShouldClose()) {
+    PlayerUpdate(&amp;player, GetFrameTime());
+
+    BeginDrawing();
+        ClearBackground(RAYWHITE);
+        PlayerDraw(&amp;player);
+    EndDrawing();
+}</code></pre>
+
+<div class="note"><p><b>Указатель или значение?</b> Если функция меняет структуру — передавайте указатель (<code>Player *p</code>). Если только читает — передавайте <code>const Player *p</code>. Передача структуры по значению копирует её целиком: для <code>Vector2</code> в восемь байт это нормально, для структуры на двести байт — расточительно, а изменения внутри функции всё равно потеряются.</p></div>
+
+<h3>Почему это работает не хуже классов</h3>
+
+<p>Класс — это структура данных плюс набор функций, которые с ней работают, плюс правило «первый аргумент передаётся неявно». В C мы просто передаём этот аргумент явно. Всё остальное — то же самое.</p>
+
+<p>Побочный эффект оказывается приятным: становится видно, кто что меняет. Когда в сигнатуре написано <code>void EnemyUpdate(Enemy *e, const Player *target, float dt)</code>, сразу понятно, что функция трогает врага, читает игрока и зависит от времени. В коде с методами и полями объекта эта информация обычно спрятана.</p>
+
+<h3>Общие поля через вложение</h3>
+
+<p>Наследования нет, но есть композиция. Если у игрока и у врага есть общая часть, её выносят в отдельную структуру:</p>
+
+<pre><code>typedef struct Body {
+    Vector2 pos;
+    Vector2 vel;
+    Rectangle hitbox;
+} Body;
+
+typedef struct Player {
+    Body body;
+    int  health;
+    int  coins;
+} Player;
+
+typedef struct Enemy {
+    Body body;
+    int  damage;
+    float patrolRange;
+} Enemy;</code></pre>
+
+<p>И функции, работающие с физикой, принимают <code>Body *</code> — им всё равно, чей это body:</p>
+
+<pre><code>void BodyApplyGravity(Body *b, float dt)
+{
+    b-&gt;vel.y += 900.0f * dt;
+    b-&gt;pos.y += b-&gt;vel.y * dt;
+    b-&gt;hitbox.x = b-&gt;pos.x;
+    b-&gt;hitbox.y = b-&gt;pos.y;
+}
+
+// вызов:
+BodyApplyGravity(&amp;player.body, dt);
+BodyApplyGravity(&amp;enemy.body, dt);</code></pre>
+
+<h3>Полиморфизм через тег</h3>
+
+<p>Когда нужно, чтобы разные враги вели себя по-разному, но лежали в одном массиве, используют поле-тип и <code>switch</code>:</p>
+
+<pre><code>typedef enum EnemyKind {
+    ENEMY_WALKER,
+    ENEMY_FLYER,
+    ENEMY_TURRET,
+} EnemyKind;
+
+typedef struct Enemy {
+    EnemyKind kind;
+    Vector2 pos;
+    Vector2 vel;
+    float timer;
+    int health;
+} Enemy;
+
+void EnemyUpdate(Enemy *e, float dt)
+{
+    switch (e-&gt;kind) {
+        case ENEMY_WALKER:
+            e-&gt;pos.x += e-&gt;vel.x * dt;
+            break;
+        case ENEMY_FLYER:
+            e-&gt;timer += dt;
+            e-&gt;pos.y += sinf(e-&gt;timer * 3.0f) * 60.0f * dt;
+            break;
+        case ENEMY_TURRET:
+            e-&gt;timer += dt;
+            if (e-&gt;timer &gt; 1.5f) { e-&gt;timer = 0; SpawnBullet(e-&gt;pos); }
+            break;
+    }
+}</code></pre>
+
+<div class="tip"><p><b>Это не «бедный человек делает наследование».</b> Такой подход широко используется в игровой индустрии как раз потому, что он предсказуем: всё поведение врагов видно в одной функции, его легко читать и отлаживать. Компилятор к тому же предупредит, если вы добавили новый вид врага и забыли обработать его в <code>switch</code> — при условии, что вы не написали <code>default</code>.</p></div>
+
+<h3>Соглашения, которые окупаются</h3>
+
+<ul>
+<li>Имя функции = <code>ТипДействие</code>: <code>PlayerUpdate</code>, <code>EnemyDraw</code>, <code>BulletSpawn</code>.</li>
+<li>Первый параметр — та структура, над которой работаем.</li>
+<li><code>const</code> везде, где не меняем. Компилятор поймает случайную запись.</li>
+<li>Пара <code>Init</code>/<code>Free</code> или <code>Load</code>/<code>Unload</code> — если сущность владеет какими-то ресурсами.</li>
+</ul>
+
+<div class="task"><div class="h">Проверьте себя</div><ul>
+<li>Оформите мяч из четвёртой главы в структуру <code>Ball</code> с функциями <code>BallInit</code>, <code>BallUpdate</code>, <code>BallDraw</code>.</li>
+<li>Создайте три мяча с разными цветами и скоростями, обновляйте их одним циклом.</li>
+</ul></div>
+
+<div class="pager"></div>
+</article>
+
+
+<article class="ch" id="ch07" data-part="Часть II · Архитектура" data-title="Массивы объектов и пулы">
+<div class="ch-meta"><span class="num">07</span><span>Часть II · Архитектура</span></div>
+<h2>Массивы объектов и пулы</h2>
+
+<p>В игре редко бывает один враг. Их бывает тридцать, пуль — двести, частиц — тысяча. Вопрос в том, где всё это хранить.</p>
+
+<h3>Не начинайте с malloc</h3>
+
+<p>Первое, что приходит в голову человеку, знающему C, — динамический массив с <code>malloc</code> и <code>realloc</code>. Для игры это почти всегда преждевременное усложнение. Гораздо надёжнее статический массив фиксированного размера:</p>
+
+<pre><code>#define MAX_BULLETS 256
+
+typedef struct Bullet {
+    Vector2 pos;
+    Vector2 vel;
+    bool active;        // ключевое поле
+} Bullet;
+
+Bullet bullets[MAX_BULLETS] = { 0 };</code></pre>
+
+<p>Массив создаётся один раз, живёт всю игру и никогда не переезжает в памяти. Утечек нет по построению, указатели не протухают, освобождать нечего.</p>
+
+<div class="note"><p><b>Сколько памяти это занимает.</b> <code>Bullet</code> — двадцать байт. 256 пуль — пять килобайт. Даже тысяча врагов по сто байт каждый — это сто килобайт. На фоне одной текстуры 1024×1024, которая занимает четыре мегабайта видеопамяти, это ничто. Экономить здесь не на чем.</p></div>
+
+<h3>Пул: флаг активности вместо создания и удаления</h3>
+
+<p>Объекты не создаются и не удаляются — они включаются и выключаются. Это называется пулом объектов.</p>
+
+<pre><code>void SpawnBullet(Vector2 pos, Vector2 vel)
+{
+    for (int i = 0; i &lt; MAX_BULLETS; i++) {
+        if (!bullets[i].active) {           // нашли свободный слот
+            bullets[i].pos = pos;
+            bullets[i].vel = vel;
+            bullets[i].active = true;
+            return;
+        }
+    }
+    // свободных нет — просто ничего не делаем
+}
+
+void UpdateBullets(float dt)
+{
+    for (int i = 0; i &lt; MAX_BULLETS; i++) {
+        if (!bullets[i].active) continue;
+
+        bullets[i].pos.x += bullets[i].vel.x * dt;
+        bullets[i].pos.y += bullets[i].vel.y * dt;
+
+        // улетела за экран — выключаем
+        if (bullets[i].pos.y &lt; -20 || bullets[i].pos.y &gt; GetScreenHeight() + 20 ||
+            bullets[i].pos.x &lt; -20 || bullets[i].pos.x &gt; GetScreenWidth() + 20) {
+            bullets[i].active = false;
+        }
+    }
+}
+
+void DrawBullets(void)
+{
+    for (int i = 0; i &lt; MAX_BULLETS; i++) {
+        if (bullets[i].active) DrawCircleV(bullets[i].pos, 4, YELLOW);
+    }
+}</code></pre>
+
+<p>Удаление пули — это одна строчка <code>active = false</code>. Никаких сдвигов массива, никаких проблем с индексами внутри цикла, никакого освобождения памяти.</p>
+
+<h3>Альтернатива: плотный массив со счётчиком</h3>
+
+<p>Если объекты не нужно держать по фиксированным индексам, можно хранить их плотно и удалять перестановкой последнего на место удалённого:</p>
+
+<pre><code>Enemy enemies[MAX_ENEMIES];
+int enemyCount = 0;
+
+void SpawnEnemy(Vector2 pos)
+{
+    if (enemyCount &gt;= MAX_ENEMIES) return;
+    enemies[enemyCount].pos = pos;
+    enemies[enemyCount].health = 3;
+    enemyCount++;
+}
+
+void RemoveEnemy(int i)
+{
+    enemies[i] = enemies[enemyCount - 1];    // последний переезжает на место i
+    enemyCount--;
+}</code></pre>
+
+<p>Такой массив приятнее обходить: цикл идёт до <code>enemyCount</code>, никаких проверок на активность. Но порядок элементов при удалении меняется.</p>
+
+<div class="warn"><p><b>Классическая ловушка при удалении в цикле.</b> Если внутри <code>for</code> вы вызвали <code>RemoveEnemy(i)</code>, на место <code>i</code> встал другой враг — и <code>i++</code> его пропустит. Правильно так:</p>
+<pre><code>for (int i = 0; i &lt; enemyCount; ) {
+    if (enemies[i].health &lt;= 0) {
+        RemoveEnemy(i);          // i НЕ увеличиваем
+    } else {
+        i++;
+    }
+}</code></pre>
+<p>Либо идите циклом с конца — тогда перестановки не мешают.</p></div>
+
+<h3>Что выбрать</h3>
+
+<table>
+<tr><th></th><th>Пул с <code>active</code></th><th>Плотный массив</th></tr>
+<tr><td>Удаление</td><td>один флаг</td><td>перестановка последнего</td></tr>
+<tr><td>Обход</td><td>с проверкой <code>if (!active) continue</code></td><td>подряд до <code>count</code></td></tr>
+<tr><td>Порядок</td><td>сохраняется</td><td>ломается при удалении</td></tr>
+<tr><td>Ссылки по индексу</td><td>остаются валидными</td><td>протухают</td></tr>
+<tr><td>Хорош для</td><td>пуль, частиц, эффектов</td><td>врагов, предметов, всего, что перебирают</td></tr>
+</table>
+
+<h3>Когда всё-таки нужен malloc</h3>
+
+<p>Когда размер по-настоящему неизвестен заранее: тайловая карта, загруженная из файла произвольного размера; список уровней; текст, прочитанный с диска. В этих случаях выделяйте один раз при загрузке и освобождайте при выгрузке — не в игровом цикле.</p>
+
+<pre><code>int *tiles = malloc(sizeof(int) * mapW * mapH);
+if (tiles == NULL) {
+    TraceLog(LOG_ERROR, "Не хватило памяти под карту");
+    return false;
+}
+// ... работа ...
+free(tiles);</code></pre>
+
+<div class="tip"><p><b>Отладочный приём.</b> Выведите на экран количество активных объектов: <code>DrawText(TextFormat("пуль: %d", CountActive()), 10, 40, 20, BLACK)</code>. Если число растёт и не падает — где-то пули не выключаются, и скоро пул закончится.</p></div>
+
+<div class="task"><div class="h">Проверьте себя</div><ul>
+<li>Сделайте стрельбу по пробелу с задержкой 0.15 с, пули летят вверх и выключаются за экраном.</li>
+<li>Добавьте врагов, падающих сверху, в плотном массиве. Удаляйте тех, кто ушёл вниз за экран.</li>
+<li>Выведите на экран счётчики активных пуль и врагов.</li>
+</ul></div>
+
+<div class="pager"></div>
+</article>
+
+
+<article class="ch" id="ch08" data-part="Часть II · Архитектура" data-title="Состояния игры">
+<div class="ch-meta"><span class="num">08</span><span>Часть II · Архитектура</span></div>
+<h2>Состояния игры</h2>
+
+<p>Игра почти никогда не состоит из одного экрана. Есть меню, есть сам геймплей, есть пауза, есть экран проигрыша. Всё это живёт в одном цикле, и надо как-то решать, что именно сейчас обновлять и рисовать.</p>
+
+<h3>Перечисление и switch</h3>
+
+<pre><code>typedef enum GameState {
+    STATE_MENU,
+    STATE_PLAYING,
+    STATE_PAUSED,
+    STATE_GAMEOVER,
+} GameState;
+
+GameState state = STATE_MENU;</code></pre>
+
+<p>Дальше цикл раскладывается на два <code>switch</code> — один в обновлении, один в отрисовке:</p>
+
+<pre><code>while (!WindowShouldClose())
+{
+    float dt = GetFrameTime();
+
+    // ---- Обновление ----
+    switch (state)
+    {
+        case STATE_MENU:
+            if (IsKeyPressed(KEY_ENTER)) {
+                ResetGame();
+                state = STATE_PLAYING;
+            }
+            break;
+
+        case STATE_PLAYING:
+            UpdateGame(dt);
+            if (IsKeyPressed(KEY_P)) state = STATE_PAUSED;
+            if (player.health &lt;= 0)  state = STATE_GAMEOVER;
+            break;
+
+        case STATE_PAUSED:
+            if (IsKeyPressed(KEY_P)) state = STATE_PLAYING;
+            break;
+
+        case STATE_GAMEOVER:
+            if (IsKeyPressed(KEY_ENTER)) state = STATE_MENU;
+            break;
+    }
+
+    // ---- Отрисовка ----
+    BeginDrawing();
+        ClearBackground(RAYWHITE);
+
+        switch (state)
+        {
+            case STATE_MENU:
+                DrawText("МОЯ ИГРА", 240, 150, 50, DARKBLUE);
+                DrawText("Enter — начать", 290, 230, 20, GRAY);
+                break;
+
+            case STATE_PLAYING:
+                DrawGame();
+                break;
+
+            case STATE_PAUSED:
+                DrawGame();                                     // мир виден
+                DrawRectangle(0, 0, 800, 450, Fade(BLACK, 0.5f)); // затемнение
+                DrawText("ПАУЗА", 310, 200, 40, RAYWHITE);
+                break;
+
+            case STATE_GAMEOVER:
+                DrawGame();
+                DrawRectangle(0, 0, 800, 450, Fade(MAROON, 0.6f));
+                DrawText("КОНЕЦ ИГРЫ", 230, 190, 40, RAYWHITE);
+                DrawText(TextFormat("Счёт: %d", score), 320, 250, 24, RAYWHITE);
+                break;
+        }
+    EndDrawing();
+}</code></pre>
+
+<p>Пауза здесь рисует мир, но не обновляет его — за счёт того, что <code>UpdateGame</code> вызывается только в <code>STATE_PLAYING</code>. Это и есть весь механизм паузы, отдельного флага не нужно.</p>
+
+<div class="note"><p><b>Не пишите <code>default</code> в этих <code>switch</code>.</b> Тогда при добавлении нового состояния компилятор с <code>-Wall</code> предупредит: «enumeration value STATE_SHOP not handled in switch». Это бесплатная страховка от забытых веток.</p></div>
+
+<h3>Сброс состояния при новой игре</h3>
+
+<p>Переход в <code>STATE_PLAYING</code> из меню должен возвращать мир в исходное состояние. Соберите это в одну функцию и вызывайте её при каждом старте:</p>
+
+<pre><code>void ResetGame(void)
+{
+    PlayerInit(&amp;player, (Vector2){400, 400});
+    enemyCount = 0;
+    score = 0;
+    spawnTimer = 0;
+    for (int i = 0; i &lt; MAX_BULLETS; i++) bullets[i].active = false;
+}</code></pre>
+
+<div class="warn"><p><b>Забытый сброс — источник призрачных багов.</b> Второй заход в игру начинается с врагами, оставшимися от первого, или со счётом, который не обнулился. Отладить это сложно, потому что первый запуск всегда работает правильно. Заведите правило: любое новое глобальное состояние — сразу добавляем строку в <code>ResetGame</code>.</p></div>
+
+<h3>Когда состояний становится много</h3>
+
+<p>Если экранов больше пяти-шести и у каждого своя загрузка ресурсов, <code>switch</code> начинает разрастаться. Тогда переходят к таблице функций:</p>
+
+<pre><code>typedef struct Screen {
+    void (*enter)(void);
+    void (*update)(float dt);
+    void (*draw)(void);
+    void (*exit)(void);
+} Screen;
+
+Screen screens[] = {
+    [STATE_MENU]     = { MenuEnter,  MenuUpdate,  MenuDraw,  MenuExit  },
+    [STATE_PLAYING]  = { GameEnter,  GameUpdate,  GameDraw,  GameExit  },
+    [STATE_GAMEOVER] = { OverEnter,  OverUpdate,  OverDraw,  OverExit  },
+};
+
+void SwitchState(GameState next)
+{
+    if (screens[state].exit)  screens[state].exit();
+    state = next;
+    if (screens[state].enter) screens[state].enter();
+}
+
+// в цикле:
+screens[state].update(dt);
+// ...
+screens[state].draw();</code></pre>
+
+<p>Здесь появляются <code>enter</code> и <code>exit</code> — точки, в которых экран готовит и убирает за собой ресурсы. Для курсовой игры это избыточно, для проекта на несколько тысяч строк — окупается.</p>
+
+<div class="tip"><p><b>Плавные переходы.</b> Добавьте <code>float fade</code> и рисуйте поверх всего <code>DrawRectangle(0,0,w,h, Fade(BLACK, fade))</code>. Перед сменой состояния доводите <code>fade</code> до единицы, после — обратно до нуля. Двадцать строк кода, а игра сразу выглядит на порядок опрятнее.</p></div>
+
+<div class="task"><div class="h">Проверьте себя</div><ul>
+<li>Добавьте к своей игре меню, паузу и экран проигрыша.</li>
+<li>Убедитесь, что после проигрыша и рестарта счёт обнуляется, а старые враги исчезают.</li>
+<li>Сделайте затемнение при переходе между состояниями.</li>
+</ul></div>
+
+<div class="pager"></div>
+</article>
+
+
+<article class="ch" id="ch09" data-part="Часть II · Архитектура" data-title="Разбиение проекта на файлы">
+<div class="ch-meta"><span class="num">09</span><span>Часть II · Архитектура</span></div>
+<h2>Разбиение проекта на файлы</h2>
+
+<p>Пока в <code>main.c</code> двести строк, всё в порядке. На тысяче становится тяжело, на двух тысячах — невозможно. Пора раскладывать по файлам.</p>
+
+<h3>Структура проекта</h3>
+
+<pre><code>mygame/
+├── Makefile
+├── src/
+│   ├── main.c        — цикл, состояния
+│   ├── game.h
+│   ├── game.c        — логика геймплея
+│   ├── player.h
+│   ├── player.c
+│   ├── enemy.h
+│   ├── enemy.c
+│   └── assets.h      — общие ресурсы
+└── resources/
+    ├── sprites/
+    ├── fonts/
+    └── sounds/</code></pre>
+
+<h3>Как устроен заголовочный файл</h3>
+
+<p>В <code>.h</code> лежит то, что нужно знать другим файлам: типы и объявления функций. Реализация — в <code>.c</code>.</p>
+
+<div class="filename">src/player.h</div>
+<pre><code>#ifndef PLAYER_H
+#define PLAYER_H
+
+#include &lt;raylib.h&gt;
+
+typedef struct Player {
+    Vector2 pos;
+    Vector2 vel;
+    float   speed;
+    int     health;
+    bool    onGround;
+} Player;
+
+void PlayerInit(Player *p, Vector2 startPos);
+void PlayerUpdate(Player *p, float dt);
+void PlayerDraw(const Player *p);
+void PlayerTakeDamage(Player *p, int amount);
+
+#endif</code></pre>
+
+<div class="filename">src/player.c</div>
+<pre><code>#include "player.h"
+
+#define PLAYER_RADIUS 20.0f
+
+void PlayerInit(Player *p, Vector2 startPos)
+{
+    p-&gt;pos = startPos;
+    p-&gt;vel = (Vector2){ 0, 0 };
+    p-&gt;speed = 320.0f;
+    p-&gt;health = 100;
+    p-&gt;onGround = false;
+}
+
+void PlayerUpdate(Player *p, float dt)
+{
+    if (IsKeyDown(KEY_D)) p-&gt;pos.x += p-&gt;speed * dt;
+    if (IsKeyDown(KEY_A)) p-&gt;pos.x -= p-&gt;speed * dt;
+}
+
+void PlayerDraw(const Player *p)
+{
+    DrawCircleV(p-&gt;pos, PLAYER_RADIUS, MAROON);
+}
+
+void PlayerTakeDamage(Player *p, int amount)
+{
+    p-&gt;health -= amount;
+    if (p-&gt;health &lt; 0) p-&gt;health = 0;
+}</code></pre>
+
+<div class="note"><p><b>Про <code>#ifndef PLAYER_H</code>.</b> Это защита от повторного включения. Если <code>player.h</code> подключить дважды (напрямую и через другой заголовок), без неё компилятор увидит два определения структуры <code>Player</code> и выдаст ошибку. Макрос-страж делает второе включение пустым. Современная альтернатива — <code>#pragma once</code> первой строкой файла: короче, работает во всех актуальных компиляторах, но формально нестандартна.</p></div>
+
+<h3>Что куда класть</h3>
+
+<table>
+<tr><th>В <code>.h</code></th><th>В <code>.c</code></th></tr>
+<tr><td>определения структур и enum</td><td>тела функций</td></tr>
+<tr><td>объявления функций (прототипы)</td><td>константы, нужные только внутри</td></tr>
+<tr><td><code>#define</code>, нужные снаружи</td><td>вспомогательные функции со <code>static</code></td></tr>
+<tr><td><code>extern</code>-объявления глобальных переменных</td><td>сами глобальные переменные</td></tr>
+</table>
+
+<p>Ключевое слово <code>static</code> перед функцией в <code>.c</code> делает её видимой только внутри этого файла. Это ваш способ сказать «это внутренняя кухня, снаружи не трогать»:</p>
+
+<pre><code>static bool IsOnScreen(Vector2 p)     // видна только в этом .c
+{
+    return p.x &gt;= 0 &amp;&amp; p.x &lt;= GetScreenWidth() &amp;&amp;
+           p.y &gt;= 0 &amp;&amp; p.y &lt;= GetScreenHeight();
+}</code></pre>
+
+<h3>Общие ресурсы</h3>
+
+<p>Текстуры и звуки нужны сразу нескольким модулям. Удобный приём — одна структура со всеми ресурсами:</p>
+
+<div class="filename">src/assets.h</div>
+<pre><code>#ifndef ASSETS_H
+#define ASSETS_H
+
+#include &lt;raylib.h&gt;
+
+typedef struct Assets {
+    Texture2D player;
+    Texture2D enemy;
+    Texture2D tileset;
+    Font      ui;
+    Sound     shoot;
+    Sound     hit;
+    Music     bgm;
+} Assets;
+
+extern Assets assets;      // объявление: «переменная где-то есть»
+
+bool AssetsLoad(void);
+void AssetsUnload(void);
+
+#endif</code></pre>
+
+<div class="filename">src/assets.c</div>
+<pre><code>#include "assets.h"
+
+Assets assets = { 0 };     // определение: сама переменная
+
+bool AssetsLoad(void)
+{
+    assets.player = LoadTexture("resources/sprites/player.png");
+    assets.enemy  = LoadTexture("resources/sprites/enemy.png");
+    assets.ui     = LoadFont("resources/fonts/ui.ttf");
+    assets.shoot  = LoadSound("resources/sounds/shoot.wav");
+    assets.bgm    = LoadMusicStream("resources/sounds/theme.ogg");
+
+    if (!IsTextureValid(assets.player)) {
+        TraceLog(LOG_ERROR, "Не найден player.png");
+        return false;
+    }
+    return true;
+}
+
+void AssetsUnload(void)
+{
+    UnloadTexture(assets.player);
+    UnloadTexture(assets.enemy);
+    UnloadFont(assets.ui);
+    UnloadSound(assets.shoot);
+    UnloadMusicStream(assets.bgm);
+}</code></pre>
+
+<div class="warn"><p><b><code>extern</code> в заголовке, определение — ровно в одном <code>.c</code>.</b> Если написать <code>Assets assets;</code> прямо в <code>.h</code>, переменная создастся в каждом файле, который подключит заголовок, и линковщик выдаст «multiple definition». Заголовок только объявляет, что такая переменная существует.</p></div>
+
+<h3>Makefile для многофайлового проекта</h3>
+
+<div class="filename">Makefile</div>
+<pre><code>CC      = gcc
+CFLAGS  = -Wall -Wextra -g -Isrc $(shell pkg-config --cflags raylib)
+LDLIBS  = $(shell pkg-config --libs raylib) -lm
+
+SRC = $(wildcard src/*.c)
+OBJ = $(SRC:.c=.o)
+BIN = game
+
+$(BIN): $(OBJ)
+	$(CC) $(OBJ) -o $(BIN) $(LDLIBS)
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $&lt; -o $@
+
+run: $(BIN)
+	./$(BIN)
+
+clean:
+	rm -f $(OBJ) $(BIN)
+
+.PHONY: run clean</code></pre>
+
+<p><code>wildcard</code> подхватит любые новые <code>.c</code> в <code>src/</code> автоматически. Правило <code>%.o: %.c</code> собирает каждый файл отдельно — при изменении одного модуля пересобирается только он.</p>
+
+<div class="tip"><p><b>Пути к ресурсам.</b> Игра, запущенная из другой папки, не найдёт <code>resources/</code>. Лечится так: <code>ChangeDirectory(GetApplicationDirectory());</code> первой строкой в <code>main</code>. Тогда относительные пути всегда считаются от папки с исполняемым файлом.</p></div>
+
+<div class="task"><div class="h">Проверьте себя</div><ul>
+<li>Разнесите свою текущую игру на <code>main.c</code>, <code>player.c/h</code>, <code>enemy.c/h</code>.</li>
+<li>Соберите проект многофайловым Makefile и убедитесь, что <code>make</code> пересобирает только изменённые файлы.</li>
+<li>Заведите <code>assets.c/h</code> и перенесите туда загрузку всех ресурсов.</li>
+</ul></div>
+
+<div class="pager"></div>
+</article>
+<article class="ch" id="ch10" data-part="Часть III · Графика" data-title="Текстуры и спрайты">
+<div class="ch-meta"><span class="num">10</span><span>Часть III · Графика</span></div>
+<h2>Текстуры и спрайты</h2>
+
+<h3>Image и Texture2D — не одно и то же</h3>
+
+<table>
+<tr><th></th><th><code>Image</code></th><th><code>Texture2D</code></th></tr>
+<tr><td>Где живёт</td><td>оперативная память (RAM)</td><td>видеопамять (VRAM)</td></tr>
+<tr><td>Что можно</td><td>читать и менять пиксели на процессоре</td><td>только рисовать</td></tr>
+<tr><td>Скорость рисования</td><td>нельзя рисовать напрямую</td><td>очень быстро</td></tr>
+<tr><td>Когда нужен</td><td>обработка картинки, генерация, маски</td><td>всё, что видно на экране</td></tr>
+</table>
+
+<p>Обычный путь такой: <code>LoadTexture</code> сразу грузит файл в видеопамять. Если нужно что-то с картинкой сделать перед этим — грузим <code>LoadImage</code>, обрабатываем, переводим в текстуру через <code>LoadTextureFromImage</code> и <code>Image</code> освобождаем.</p>
+
+<pre><code>// Обычный случай
+Texture2D tex = LoadTexture("resources/player.png");
+
+// С предварительной обработкой
+Image img = LoadImage("resources/player.png");
+ImageResizeNN(&amp;img, img.width * 4, img.height * 4);   // увеличить в 4 раза
+Texture2D tex = LoadTextureFromImage(img);
+UnloadImage(img);          // Image больше не нужен — текстура уже в GPU</code></pre>
+
+<h3>Рисование</h3>
+
+<pre><code>DrawTexture(tex, 100, 50, WHITE);                   // просто в точку
+DrawTextureV(tex, pos, WHITE);                       // позиция как Vector2
+DrawTextureEx(tex, pos, 45.0f, 2.0f, WHITE);         // поворот 45°, масштаб 2×</code></pre>
+
+<div class="note"><p><b>Зачем последний параметр <code>WHITE</code>.</b> Это цвет подкраски: каждый пиксель текстуры умножается на него. <code>WHITE</code> — умножение на единицу, текстура без изменений. <code>RED</code> оставит только красный канал. <code>Fade(WHITE, 0.5f)</code> сделает полупрозрачной. Мигание врага при получении урона — это просто <code>DrawTexture(tex, x, y, hurt ? RED : WHITE)</code>.</p></div>
+
+<h3>Вырезание куска: DrawTextureRec</h3>
+
+<p>Спрайты почти никогда не лежат по одному файлу. Их собирают в атлас — одну большую картинку, из которой вырезают нужный прямоугольник:</p>
+
+<pre><code>Rectangle src = { 32, 0, 32, 32 };      // второй кадр в первом ряду
+DrawTextureRec(tex, src, (Vector2){ 100, 200 }, WHITE);</code></pre>
+
+<p><code>src</code> — координаты внутри текстуры. Начало отсчёта — левый верхний угол картинки.</p>
+
+<h3>Полный контроль: DrawTexturePro</h3>
+
+<p>Эта функция умеет всё сразу и стоит того, чтобы разобраться с ней один раз:</p>
+
+<pre><code>void DrawTexturePro(Texture2D texture,
+                    Rectangle source,      // что берём из текстуры
+                    Rectangle dest,        // куда и какого размера кладём
+                    Vector2   origin,      // точка вращения, отсчёт от угла dest
+                    float     rotation,    // угол в градусах
+                    Color     tint);</code></pre>
+
+<p>Отрисовка спрайта, вращающегося вокруг своего центра:</p>
+
+<pre><code>Rectangle src  = { 0, 0, tex.width, tex.height };
+Rectangle dest = { pos.x, pos.y, tex.width * scale, tex.height * scale };
+Vector2   origin = { dest.width / 2, dest.height / 2 };
+
+DrawTexturePro(tex, src, dest, origin, angle, WHITE);</code></pre>
+
+<div class="tip"><p><b>Origin меняет смысл позиции.</b> При <code>origin = {0,0}</code> координата <code>dest.x, dest.y</code> — это левый верхний угол спрайта. При <code>origin</code> в половину размера — это его центр. Для персонажей обычно удобнее второе: позиция совпадает с точкой, вокруг которой всё вращается и от которой считаются расстояния.</p></div>
+
+<h3>Отражение по горизонтали</h3>
+
+<p>Отдельной функции для этого нет — используется отрицательная ширина в <code>source</code>:</p>
+
+<pre><code>Rectangle src = { 0, 0, tex.width, tex.height };
+if (facingLeft) src.width = -src.width;      // зеркалим
+
+DrawTextureRec(tex, src, pos, WHITE);</code></pre>
+
+<p>Это стандартный приём: один спрайт персонажа, смотрящего вправо, работает на оба направления.</p>
+
+<h3>Пиксель-арт: обязательный фильтр</h3>
+
+<p>По умолчанию при увеличении текстуры применяется билинейная фильтрация — она сглаживает, и пиксель-арт превращается в мыло:</p>
+
+<pre><code>SetTextureFilter(tex, TEXTURE_FILTER_POINT);</code></pre>
+
+<p><code>TEXTURE_FILTER_POINT</code> — ближайший сосед, пиксели остаются чёткими квадратами. Ставится один раз после загрузки. Для фотореалистичных текстур, наоборот, оставляйте <code>TEXTURE_FILTER_BILINEAR</code>.</p>
+
+<div class="warn"><p><b>Ещё одна причина размытых спрайтов — дробные координаты.</b> Если <code>pos.x = 100.37f</code>, пиксели спрайта не совпадут с пикселями экрана. Для пиксель-арта округляйте позицию при отрисовке: <code>DrawTextureV(tex, (Vector2){ floorf(pos.x), floorf(pos.y) }, WHITE)</code>. Сама позиция при этом остаётся дробной — округляется только момент рисования.</p></div>
+
+<h3>Загрузка и выгрузка</h3>
+
+<pre><code>// при старте
+Texture2D player = LoadTexture("resources/player.png");
+if (!IsTextureValid(player)) {
+    TraceLog(LOG_ERROR, "player.png не загрузился");
+    return 1;
+}
+SetTextureFilter(player, TEXTURE_FILTER_POINT);
+
+// ... игра ...
+
+// перед выходом
+UnloadTexture(player);</code></pre>
+
+<p>Правило простое: на каждый <code>Load*</code> должен быть свой <code>Unload*</code>. Деструкторов в C нет, и никто не освободит память за вас.</p>
+
+<div class="task"><div class="h">Проверьте себя</div><ul>
+<li>Загрузите любой PNG и нарисуйте его в трёх экземплярах: обычный, повёрнутый, отражённый.</li>
+<li>Сделайте так, чтобы спрайт следовал за мышью и разворачивался в её сторону.</li>
+<li>Сравните <code>TEXTURE_FILTER_POINT</code> и <code>BILINEAR</code> на увеличенном в шесть раз маленьком спрайте.</li>
+</ul></div>
+
+<div class="pager"></div>
+</article>
+
+
+<article class="ch" id="ch11" data-part="Часть III · Графика" data-title="Спрайтовая анимация">
+<div class="ch-meta"><span class="num">11</span><span>Часть III · Графика</span></div>
+<h2>Спрайтовая анимация</h2>
+
+<p>Анимация в 2D — это последовательная смена кадров из атласа. Всё, что нужно: знать, где лежит кадр, и вовремя переключаться на следующий.</p>
+
+<h3>Простейший вариант: один ряд кадров</h3>
+
+<p>Пусть в файле <code>run.png</code> шесть кадров по 32×32, выложенных в строку.</p>
+
+<pre><code>Texture2D sheet = LoadTexture("resources/run.png");
+
+int   frameCount = 6;
+int   frame = 0;
+float frameTime = 0.0f;
+const float FRAME_DURATION = 0.1f;      // 10 кадров в секунду
+
+// --- в обновлении ---
+frameTime += dt;
+if (frameTime &gt;= FRAME_DURATION) {
+    frameTime -= FRAME_DURATION;
+    frame = (frame + 1) % frameCount;   // по кругу
+}
+
+// --- в отрисовке ---
+Rectangle src = { frame * 32.0f, 0, 32, 32 };
+DrawTextureRec(sheet, src, pos, WHITE);</code></pre>
+
+<div class="note"><p><b>Почему <code>frameTime -= FRAME_DURATION</code>, а не <code>= 0</code>.</b> Вычитание сохраняет «остаток» времени. Если кадр длился 0.017 с, а порог 0.1 с, то на седьмом кадре накопится 0.119 — при обнулении эти 0.019 потеряются, и анимация будет незаметно замедляться. Вычитание сохраняет точный темп.</p></div>
+
+<h3>Анимация как структура</h3>
+
+<p>Когда анимаций становится несколько, повторять эти переменные для каждой неудобно. Заведём тип:</p>
+
+<div class="filename">anim.h</div>
+<pre><code>typedef struct Animation {
+    Texture2D texture;
+    int   frameW, frameH;    // размер одного кадра
+    int   firstFrame;        // индекс первого кадра в атласе
+    int   frameCount;
+    float frameDuration;
+    bool  loop;
+
+    // рабочее состояние
+    int   current;
+    float timer;
+    bool  finished;
+} Animation;</code></pre>
+
+<div class="filename">anim.c</div>
+<pre><code>void AnimUpdate(Animation *a, float dt)
+{
+    if (a-&gt;finished) return;
+
+    a-&gt;timer += dt;
+    while (a-&gt;timer &gt;= a-&gt;frameDuration) {
+        a-&gt;timer -= a-&gt;frameDuration;
+        a-&gt;current++;
+
+        if (a-&gt;current &gt;= a-&gt;frameCount) {
+            if (a-&gt;loop) a-&gt;current = 0;
+            else { a-&gt;current = a-&gt;frameCount - 1; a-&gt;finished = true; }
+        }
+    }
+}
+
+void AnimReset(Animation *a)
+{
+    a-&gt;current = 0;
+    a-&gt;timer = 0;
+    a-&gt;finished = false;
+}
+
+Rectangle AnimFrameRec(const Animation *a)
+{
+    int index = a-&gt;firstFrame + a-&gt;current;
+    int perRow = a-&gt;texture.width / a-&gt;frameW;      // кадров в ряду атласа
+
+    return (Rectangle){
+        (index % perRow) * (float)a-&gt;frameW,
+        (index / perRow) * (float)a-&gt;frameH,
+        (float)a-&gt;frameW,
+        (float)a-&gt;frameH
+    };
+}
+
+void AnimDraw(const Animation *a, Vector2 pos, bool flipX, float scale)
+{
+    Rectangle src = AnimFrameRec(a);
+    if (flipX) src.width = -src.width;
+
+    Rectangle dest = { pos.x, pos.y, a-&gt;frameW * scale, a-&gt;frameH * scale };
+    Vector2 origin = { dest.width / 2, dest.height / 2 };
+
+    DrawTexturePro(a-&gt;texture, src, dest, origin, 0, WHITE);
+}</code></pre>
+
+<p><code>AnimFrameRec</code> считает позицию кадра по индексу — атлас может быть и в несколько рядов. Деление на количество кадров в ряду даёт номер строки, остаток — номер столбца.</p>
+
+<h3>Переключение анимаций</h3>
+
+<p>У персонажа обычно есть набор состояний, и каждому соответствует своя анимация:</p>
+
+<pre><code>typedef enum { ANIM_IDLE, ANIM_RUN, ANIM_JUMP, ANIM_FALL, ANIM_COUNT } AnimId;
+
+typedef struct Player {
+    Vector2 pos, vel;
+    bool onGround, facingLeft;
+
+    Animation anims[ANIM_COUNT];
+    AnimId    currentAnim;
+} Player;
+
+void PlayerSetAnim(Player *p, AnimId id)
+{
+    if (p-&gt;currentAnim == id) return;    // уже играет — не сбрасываем
+    p-&gt;currentAnim = id;
+    AnimReset(&amp;p-&gt;anims[id]);
+}
+
+void PlayerUpdateAnim(Player *p, float dt)
+{
+    if (!p-&gt;onGround) {
+        PlayerSetAnim(p, p-&gt;vel.y &lt; 0 ? ANIM_JUMP : ANIM_FALL);
+    } else if (fabsf(p-&gt;vel.x) &gt; 10.0f) {
+        PlayerSetAnim(p, ANIM_RUN);
+    } else {
+        PlayerSetAnim(p, ANIM_IDLE);
+    }
+
+    AnimUpdate(&amp;p-&gt;anims[p-&gt;currentAnim], dt);
+}</code></pre>
+
+<div class="warn"><p><b>Проверка <code>if (p-&gt;currentAnim == id) return;</code> критична.</b> Без неё <code>AnimReset</code> будет вызываться каждый кадр, счётчик кадров будет обнуляться, и анимация замрёт на первом кадре. Это одна из тех ошибок, где всё выглядит правильно, а на экране статичная картинка.</p></div>
+
+<h3>Инициализация набора анимаций</h3>
+
+<pre><code>void PlayerInitAnims(Player *p, Texture2D sheet)
+{
+    // атлас 6 кадров в ряду, кадр 32×32
+    p-&gt;anims[ANIM_IDLE] = (Animation){ sheet, 32, 32,  0, 4, 0.18f, true };
+    p-&gt;anims[ANIM_RUN]  = (Animation){ sheet, 32, 32,  6, 6, 0.08f, true };
+    p-&gt;anims[ANIM_JUMP] = (Animation){ sheet, 32, 32, 12, 2, 0.12f, false };
+    p-&gt;anims[ANIM_FALL] = (Animation){ sheet, 32, 32, 14, 2, 0.12f, false };
+
+    p-&gt;currentAnim = ANIM_IDLE;
+}</code></pre>
+
+<p>Незаполненные поля структуры при таком синтаксисе обнуляются автоматически — рабочее состояние <code>current</code>, <code>timer</code>, <code>finished</code> будет нулевым, что нам и нужно.</p>
+
+<div class="tip"><p><b>Одноразовые анимации.</b> Взрыв, удар, подбор предмета удобно делать с <code>loop = false</code> и проверять <code>finished</code>: как только флаг поднялся — выключаем объект из пула. Взрыв тогда сам себя убирает, без дополнительных таймеров.</p></div>
+
+<div class="task"><div class="h">Проверьте себя</div><ul>
+<li>Возьмите любой бесплатный спрайтшит (на itch.io их много) и заведите на нём анимацию бега.</li>
+<li>Сделайте переключение idle ↔ run по нажатию клавиш движения.</li>
+<li>Добавьте взрыв с <code>loop = false</code>, который появляется по клику и исчезает после последнего кадра.</li>
+</ul></div>
+
+<div class="pager"></div>
+</article>
+
+
+<article class="ch" id="ch12" data-part="Часть III · Графика" data-title="Текст, шрифты и кириллица">
+<div class="ch-meta"><span class="num">12</span><span>Часть III · Графика</span></div>
+<h2>Текст, шрифты и кириллица</h2>
+
+<p>Тема, на которой спотыкается каждый русскоязычный новичок. Разберём её основательно, потому что решение не очевидно.</p>
+
+<h3>Почему DrawText не пишет по-русски</h3>
+
+<p>Встроенный шрифт raylib содержит только 224 символа — по сути латиницу, цифры и знаки препинания. Кириллицы в нём просто нет. Вызов <code>DrawText("Привет", ...)</code> выведет либо знаки вопроса, либо пустые прямоугольники.</p>
+
+<p>Решение: загрузить свой TTF-шрифт и явно указать, какие символы из него взять.</p>
+
+<h3>Загрузка шрифта с кириллицей</h3>
+
+<pre><code>Font LoadFontRussian(const char *file, int size)
+{
+    int codepoints[512] = { 0 };
+    int n = 0;
+
+    // Базовая латиница и знаки: 32..126
+    for (int i = 32; i &lt;= 126; i++) codepoints[n++] = i;
+
+    // Кириллица: 0x0400..0x045F — заглавные, строчные, Ё и ё
+    for (int i = 0x0400; i &lt;= 0x045F; i++) codepoints[n++] = i;
+
+    // Полезные знаки
+    codepoints[n++] = 0x2116;   // №
+    codepoints[n++] = 0x00AB;   // «
+    codepoints[n++] = 0x00BB;   // »
+    codepoints[n++] = 0x2014;   // тире
+
+    return LoadFontEx(file, size, codepoints, n);
+}</code></pre>
+
+<p>Использование:</p>
+
+<pre><code>Font ui = LoadFontRussian("resources/fonts/Inter.ttf", 32);
+
+// рисуем только через DrawTextEx — DrawText работает со встроенным шрифтом
+DrawTextEx(ui, "Привет, мир!", (Vector2){ 40, 40 }, 32, 1, BLACK);</code></pre>
+
+<div class="warn"><p><b>Три условия, чтобы кириллица появилась:</b></p>
+<ol style="margin-bottom:0">
+<li>Файл <code>.c</code> сохранён в UTF-8 без BOM — иначе строка в исходнике уже сломана.</li>
+<li>Шрифт загружен через <code>LoadFontEx</code> с диапазоном кириллицы.</li>
+<li>Текст рисуется через <code>DrawTextEx</code>, а не <code>DrawText</code>.</li>
+</ol>
+<p>Нарушение любого из трёх даёт квадратики. Проверять стоит именно в этом порядке.</p></div>
+
+<h3>Размер при загрузке имеет значение</h3>
+
+<p>Второй параметр <code>LoadFontEx</code> — это размер, в котором глифы будут отрисованы в атлас. Если загрузить шрифт с размером 16, а рисовать с размером 48, текст будет мыльным: его растягивают из маленького атласа.</p>
+
+<pre><code>Font small = LoadFontEx("font.ttf", 20, cps, n);    // для мелкого интерфейса
+Font big   = LoadFontEx("font.ttf", 64, cps, n);    // для заголовков</code></pre>
+
+<p>Загружайте шрифт в том размере, в котором собираетесь его использовать, или чуть большем. Разные размеры одного шрифта — это разные объекты <code>Font</code>.</p>
+
+<div class="tip"><p><b>Сглаживание для крупного текста.</b> После загрузки: <code>SetTextureFilter(font.texture, TEXTURE_FILTER_BILINEAR);</code> — края букв станут мягче при масштабировании. Для пиксельных шрифтов, наоборот, оставляйте <code>POINT</code>.</p></div>
+
+<h3>Измерение и выравнивание</h3>
+
+<p>Чтобы отцентрировать текст, нужно знать его ширину:</p>
+
+<pre><code>const char *title = "ГЛАВНОЕ МЕНЮ";
+float size = 48;
+
+Vector2 dim = MeasureTextEx(ui, title, size, 2);
+Vector2 pos = {
+    (GetScreenWidth()  - dim.x) / 2,
+    (GetScreenHeight() - dim.y) / 2
+};
+DrawTextEx(ui, title, pos, size, 2, DARKBLUE);</code></pre>
+
+<p>Четвёртый параметр — межбуквенный интервал в пикселях. Он влияет и на измерение, и на отрисовку, поэтому должен совпадать в обоих вызовах.</p>
+
+<h3>Форматирование</h3>
+
+<p><code>TextFormat</code> работает как <code>sprintf</code> и решает большинство задач:</p>
+
+<pre><code>DrawTextEx(ui, TextFormat("Очки: %d", score), (Vector2){20,20}, 24, 1, BLACK);
+DrawTextEx(ui, TextFormat("Время: %.1f с", elapsed), (Vector2){20,50}, 24, 1, BLACK);
+DrawTextEx(ui, TextFormat("%d / %d", hp, maxHp), (Vector2){20,80}, 24, 1, RED);</code></pre>
+
+<div class="warn"><p><b>У <code>TextFormat</code> внутри кольцевой буфер.</b> Результат живёт недолго и перезаписывается после нескольких следующих вызовов. Не сохраняйте указатель:</p>
+<pre><code>const char *s = TextFormat("Очки: %d", score);
+// ... много других вызовов TextFormat ...
+DrawText(s, ...);       // здесь уже может быть мусор</code></pre>
+<p>Используйте результат сразу, в том же выражении. Если нужно сохранить — копируйте в свой буфер через <code>TextCopy</code> или <code>snprintf</code>.</p></div>
+
+<h3>Обводка текста</h3>
+
+<p>Приём для читаемости надписей поверх пёстрого фона — нарисовать текст четыре раза со смещением, потом поверх основной:</p>
+
+<pre><code>void DrawTextOutlined(Font f, const char *txt, Vector2 pos, float size,
+                      float spacing, Color fill, Color outline)
+{
+    const int d = 2;
+    Vector2 offs[] = {{-d,0},{d,0},{0,-d},{0,d},{-d,-d},{d,-d},{-d,d},{d,d}};
+
+    for (int i = 0; i &lt; 8; i++) {
+        DrawTextEx(f, txt, (Vector2){pos.x + offs[i].x, pos.y + offs[i].y},
+                   size, spacing, outline);
+    }
+    DrawTextEx(f, txt, pos, size, spacing, fill);
+}</code></pre>
+
+<h3>Перенос строк</h3>
+
+<p><code>DrawTextEx</code> понимает <code>\n</code> и переносит строку сам. Расстояние между строками настраивается:</p>
+
+<pre><code>SetTextLineSpacing(30);
+DrawTextEx(ui, "Первая строка\nВторая строка\nТретья", pos, 24, 1, BLACK);</code></pre>
+
+<p>Автоматического переноса по ширине блока в raylib нет — если он нужен, придётся резать текст самому, измеряя слова через <code>MeasureTextEx</code>.</p>
+
+<div class="task"><div class="h">Проверьте себя</div><ul>
+<li>Скачайте любой TTF с кириллицей и выведите русский текст по центру экрана.</li>
+<li>Сделайте счётчик очков, растущий со временем, с форматированием через <code>TextFormat</code>.</li>
+<li>Напишите заголовок с обводкой поверх цветного фона.</li>
+</ul></div>
+
+<div class="pager"></div>
+</article>
+
+
+<article class="ch" id="ch13" data-part="Часть III · Графика" data-title="Camera2D: мир больше экрана">
+<div class="ch-meta"><span class="num">13</span><span>Часть III · Графика</span></div>
+<h2>Camera2D: мир больше экрана</h2>
+
+<p>Пока уровень помещается в окно, координаты мира и координаты экрана совпадают. Как только уровень стал больше — нужна камера, которая показывает его часть.</p>
+
+<h3>Структура камеры</h3>
+
+<pre><code>typedef struct Camera2D {
+    Vector2 offset;      // куда на ЭКРАНЕ попадёт точка target
+    Vector2 target;      // точка МИРА, на которую смотрим
+    float   rotation;    // поворот в градусах
+    float   zoom;        // масштаб, 1.0 — без изменений
+} Camera2D;</code></pre>
+
+<p>Разделение <code>offset</code> и <code>target</code> сначала кажется избыточным, но именно оно позволяет держать героя не в центре экрана, а где угодно.</p>
+
+<pre><code>Camera2D camera = { 0 };
+camera.target   = player.pos;                                  // смотрим на игрока
+camera.offset   = (Vector2){ GetScreenWidth()/2.0f, GetScreenHeight()/2.0f };
+camera.zoom     = 1.0f;                                        // обязательно!
+camera.rotation = 0.0f;</code></pre>
+
+<div class="warn"><p><b>Забытый <code>zoom = 1.0f</code> — самая частая ошибка с камерой.</b> При инициализации через <code>{ 0 }</code> масштаб становится нулевым, и мир схлопывается в точку. Экран остаётся пустым, и понять причину без подсказки трудно.</p></div>
+
+<h3>Использование</h3>
+
+<pre><code>BeginDrawing();
+    ClearBackground(RAYWHITE);
+
+    BeginMode2D(camera);
+        DrawMap();                 // всё в мировых координатах
+        DrawEnemies();
+        PlayerDraw(&amp;player);
+    EndMode2D();
+
+    // интерфейс — ВНЕ камеры, в экранных координатах
+    DrawText(TextFormat("Очки: %d", score), 20, 20, 24, BLACK);
+    DrawFPS(10, GetScreenHeight() - 30);
+EndDrawing();</code></pre>
+
+<p>Всё между <code>BeginMode2D</code> и <code>EndMode2D</code> рисуется в координатах мира. Всё снаружи — в координатах экрана. Интерфейс всегда снаружи, иначе он будет ездить вместе с миром.</p>
+
+<h3>Плавное следование</h3>
+
+<p>Камера, жёстко привязанная к игроку, дёргается при каждом резком движении. Плавное следование делается интерполяцией:</p>
+
+<pre><code>float smooth = 5.0f;    // больше — быстрее догоняет
+
+camera.target.x += (player.pos.x - camera.target.x) * smooth * dt;
+camera.target.y += (player.pos.y - camera.target.y) * smooth * dt;</code></pre>
+
+<p>Камера каждый кадр сдвигается на часть расстояния до цели. Получается мягкое отставание, которое читается как «вес» камеры.</p>
+
+<h3>Ограничение по границам уровня</h3>
+
+<p>Чтобы камера не показывала пустоту за краем карты:</p>
+
+<pre><code>float halfW = GetScreenWidth()  / 2.0f / camera.zoom;
+float halfH = GetScreenHeight() / 2.0f / camera.zoom;
+
+if (camera.target.x &lt; halfW)             camera.target.x = halfW;
+if (camera.target.y &lt; halfH)             camera.target.y = halfH;
+if (camera.target.x &gt; mapW - halfW)      camera.target.x = mapW - halfW;
+if (camera.target.y &gt; mapH - halfH)      camera.target.y = mapH - halfH;</code></pre>
+
+<p>Деление на <code>zoom</code> обязательно: при приближении видимая область уменьшается, и границы должны сдвинуться.</p>
+
+<h3>Преобразование координат</h3>
+
+<p>Когда камера включена, позиция мыши от <code>GetMousePosition</code> — это координаты экрана, а объекты живут в координатах мира. Переводить надо явно:</p>
+
+<pre><code>Vector2 mouseWorld = GetScreenToWorld2D(GetMousePosition(), camera);
+
+// теперь можно проверять попадание по объектам мира
+if (CheckCollisionPointRec(mouseWorld, enemy.hitbox)) { ... }</code></pre>
+
+<p>И обратно — если нужно нарисовать метку интерфейса над объектом мира:</p>
+
+<pre><code>Vector2 screenPos = GetWorldToScreen2D(enemy.pos, camera);
+DrawText("!", screenPos.x, screenPos.y - 40, 30, RED);   // рисуется вне камеры</code></pre>
+
+<div class="note"><p><b>Забытое преобразование — типичный баг «кликаю по врагу, ничего не происходит».</b> Пока камера стоит в начале координат, всё работает. Стоит миру сдвинуться — попадания уезжают. Если клики стали промахиваться после добавления камеры, ищите здесь.</p></div>
+
+<h3>Зум колесом</h3>
+
+<pre><code>float wheel = GetMouseWheelMove();
+if (wheel != 0) {
+    camera.zoom += wheel * 0.15f;
+    if (camera.zoom &lt; 0.3f) camera.zoom = 0.3f;
+    if (camera.zoom &gt; 4.0f) camera.zoom = 4.0f;
+}</code></pre>
+
+<h3>Тряска экрана</h3>
+
+<p>Дешёвый и очень эффектный приём — сдвигать <code>offset</code> на случайную величину, затухающую со временем:</p>
+
+<pre><code>float shake = 0.0f;     // поднимаем при взрыве: shake = 12.0f;
+
+// в обновлении:
+if (shake &gt; 0) {
+    shake -= 25.0f * dt;
+    if (shake &lt; 0) shake = 0;
+}
+
+camera.offset.x = GetScreenWidth()/2.0f  + GetRandomValue(-shake, shake);
+camera.offset.y = GetScreenHeight()/2.0f + GetRandomValue(-shake, shake);</code></pre>
+
+<div class="tip"><p><b>Параллакс за пять строк.</b> Дальние слои фона рисуйте отдельной камерой с уменьшенным <code>target</code>: <code>bgCam.target.x = camera.target.x * 0.3f</code>. Слой будет двигаться втрое медленнее переднего плана и создаст ощущение глубины.</p></div>
+
+<div class="task"><div class="h">Проверьте себя</div><ul>
+<li>Сделайте уровень 2400×1600, по которому игрок ходит, а камера плавно следует.</li>
+<li>Ограничьте камеру границами уровня.</li>
+<li>Добавьте зум колесом и тряску по нажатию клавиши.</li>
+</ul></div>
+
+<div class="pager"></div>
+</article>
+
+
+<article class="ch" id="ch14" data-part="Часть III · Графика" data-title="Тайловые карты">
+<div class="ch-meta"><span class="num">14</span><span>Часть III · Графика</span></div>
+<h2>Тайловые карты</h2>
+
+<p>Уровень, собранный из квадратных плиток — самый распространённый способ строить 2D-игры. Он экономит память, упрощает коллизии и позволяет рисовать уровни в текстовом редакторе.</p>
+
+<h3>Карта — это двумерный массив</h3>
+
+<pre><code>#define TILE_SIZE  32
+#define MAP_W      40
+#define MAP_H      23
+
+int map[MAP_H][MAP_W] = {
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,2,2,2,0,0,0,0,0,0,0,0,0,0,1},
+    // ...
+};</code></pre>
+
+<p>Ноль — пустота, единица — стена, двойка — платформа. Номер в массиве соответствует номеру плитки в тайлсете.</p>
+
+<h3>Отрисовка</h3>
+
+<pre><code>void DrawMap(Texture2D tileset)
+{
+    int perRow = tileset.width / TILE_SIZE;    // плиток в ряду тайлсета
+
+    for (int y = 0; y &lt; MAP_H; y++) {
+        for (int x = 0; x &lt; MAP_W; x++) {
+            int tile = map[y][x];
+            if (tile == 0) continue;           // пустоту не рисуем
+
+            int idx = tile - 1;                // нумерация в массиве с единицы
+            Rectangle src = {
+                (idx % perRow) * (float)TILE_SIZE,
+                (idx / perRow) * (float)TILE_SIZE,
+                TILE_SIZE, TILE_SIZE
+            };
+            Vector2 pos = { x * (float)TILE_SIZE, y * (float)TILE_SIZE };
+
+            DrawTextureRec(tileset, src, pos, WHITE);
+        }
+    }
+}</code></pre>
+
+<div class="warn"><p><b>Порядок индексов.</b> В <code>map[y][x]</code> первым идёт строка (Y), вторым столбец (X). Перепутать легко, а последствия странные: карта окажется транспонированной или программа полезет за границы массива. Если карта не квадратная, второе приведёт к падению.</p></div>
+
+<h3>Рисуем только видимое</h3>
+
+<p>Карта 200×200 — это сорок тысяч плиток за кадр. Большинство из них за экраном. Ограничим цикл видимой областью:</p>
+
+<pre><code>void DrawMapCulled(Texture2D tileset, Camera2D cam)
+{
+    Vector2 tl = GetScreenToWorld2D((Vector2){0, 0}, cam);
+    Vector2 br = GetScreenToWorld2D((Vector2){(float)GetScreenWidth(),
+                                              (float)GetScreenHeight()}, cam);
+
+    int x0 = (int)(tl.x / TILE_SIZE) - 1;
+    int y0 = (int)(tl.y / TILE_SIZE) - 1;
+    int x1 = (int)(br.x / TILE_SIZE) + 1;
+    int y1 = (int)(br.y / TILE_SIZE) + 1;
+
+    if (x0 &lt; 0) x0 = 0;   if (y0 &lt; 0) y0 = 0;
+    if (x1 &gt; MAP_W) x1 = MAP_W;   if (y1 &gt; MAP_H) y1 = MAP_H;
+
+    for (int y = y0; y &lt; y1; y++) {
+        for (int x = x0; x &lt; x1; x++) {
+            // ... как выше
+        }
+    }
+}</code></pre>
+
+<p>Теперь количество отрисовок зависит от размера окна, а не от размера карты. Уровень может быть каким угодно большим.</p>
+
+<h3>Коллизии с тайлами</h3>
+
+<p>Главное преимущество тайлов: не нужно перебирать все стены. По координате сразу известно, какая плитка под объектом.</p>
+
+<pre><code>bool IsSolidAt(float worldX, float worldY)
+{
+    int tx = (int)(worldX / TILE_SIZE);
+    int ty = (int)(worldY / TILE_SIZE);
+
+    if (tx &lt; 0 || ty &lt; 0 || tx &gt;= MAP_W || ty &gt;= MAP_H) return true;  // за картой — стена
+
+    return map[ty][tx] != 0;
+}</code></pre>
+
+<p>Для прямоугольного персонажа проверяем четыре угла:</p>
+
+<pre><code>bool BoxHitsMap(Rectangle r)
+{
+    return IsSolidAt(r.x,             r.y) ||
+           IsSolidAt(r.x + r.width-1, r.y) ||
+           IsSolidAt(r.x,             r.y + r.height-1) ||
+           IsSolidAt(r.x + r.width-1, r.y + r.height-1);
+}</code></pre>
+
+<div class="note"><p><b>Почему <code>-1</code>.</b> Персонаж шириной ровно 32 в позиции x=0 занимает пиксели с 0 по 31. Точка x=32 — это уже следующая плитка. Без вычитания единицы персонаж будет цепляться за стены, которых не касается.</p>
+<p>Этот приём работает, пока персонаж не больше одной плитки. Для крупных объектов нужно перебирать все перекрываемые плитки в двойном цикле.</p></div>
+
+<h3>Загрузка карты из файла</h3>
+
+<p>Держать уровни в коде неудобно. Простейший формат — текстовый, где каждый символ это плитка:</p>
+
+<div class="filename">resources/level1.txt</div>
+<pre><code>####################
+#..................#
+#....###...........#
+#..................#
+#.......@......o...#
+####################</code></pre>
+
+<pre><code>bool LoadLevel(const char *path)
+{
+    char *text = LoadFileText(path);
+    if (text == NULL) return false;
+
+    int x = 0, y = 0;
+    for (int i = 0; text[i] != '\0'; i++) {
+        switch (text[i]) {
+            case '\n': y++; x = 0; continue;
+            case '#':  map[y][x] = 1; break;
+            case '.':  map[y][x] = 0; break;
+            case '@':  map[y][x] = 0; player.pos = (Vector2){x*TILE_SIZE, y*TILE_SIZE}; break;
+            case 'o':  map[y][x] = 0; SpawnEnemy((Vector2){x*TILE_SIZE, y*TILE_SIZE}); break;
+        }
+        x++;
+    }
+
+    UnloadFileText(text);
+    return true;
+}</code></pre>
+
+<p>Такой уровень редактируется в любом текстовом редакторе, и его видно глазами прямо в файле. Для игры на пару уровней этого более чем достаточно.</p>
+
+<div class="tip"><p><b>Горячая перезагрузка уровня.</b> Повесьте <code>LoadLevel</code> на клавишу F5. Правите файл в редакторе, жмёте F5 в игре — уровень обновился без пересборки. Экономит огромное количество времени при подборе расстановки. Можно пойти дальше и сравнивать <code>GetFileModTime</code> каждый кадр, перезагружая файл автоматически при изменении.</p></div>
+
+<div class="task"><div class="h">Проверьте себя</div><ul>
+<li>Соберите карту 40×23 из тайлов и нарисуйте её с камерой.</li>
+<li>Сделайте так, чтобы игрок не проходил сквозь стены.</li>
+<li>Вынесите уровень в текстовый файл и добавьте перезагрузку по F5.</li>
+</ul></div>
+
+<div class="pager"></div>
+</article>
+<article class="ch" id="ch15" data-part="Часть IV · Механика" data-title="Коллизии и их разрешение">
+<div class="ch-meta"><span class="num">15</span><span>Часть IV · Механика</span></div>
+<h2>Коллизии и их разрешение</h2>
+
+<p>Обнаружить столкновение просто — для этого есть готовые функции. Сложность в другом: что делать после того, как столкновение обнаружено.</p>
+
+<h3>Проверки, которые есть в raylib</h3>
+
+<pre><code>CheckCollisionRecs(a, b);                       // прямоугольник × прямоугольник
+CheckCollisionCircles(c1, r1, c2, r2);          // круг × круг
+CheckCollisionCircleRec(center, r, rec);        // круг × прямоугольник
+CheckCollisionPointRec(point, rec);             // точка внутри прямоугольника
+CheckCollisionPointCircle(point, center, r);    // точка внутри круга
+GetCollisionRec(a, b);                          // прямоугольник перекрытия</code></pre>
+
+<p>Для подавляющего большинства 2D-игр хватает первых трёх. Прямоугольники быстрее и предсказуемее кругов, поэтому хитбоксы почти всегда делают прямоугольными, даже если спрайт круглый.</p>
+
+<h3>Хитбокс отдельно от спрайта</h3>
+
+<p>Область столкновений редко совпадает с картинкой. У персонажа спрайт 32×48, а хитбокс — 20×44 по центру: так он не цепляется плечами за проёмы.</p>
+
+<pre><code>Rectangle PlayerHitbox(const Player *p)
+{
+    return (Rectangle){
+        p-&gt;pos.x + 6,     // отступ слева
+        p-&gt;pos.y + 4,     // отступ сверху
+        20, 44
+    };
+}</code></pre>
+
+<div class="tip"><p><b>Обязательно рисуйте хитбоксы в отладочном режиме.</b> Заведите глобальный <code>bool debug</code>, переключаемый по F1, и рисуйте <code>DrawRectangleLinesEx(hitbox, 1, GREEN)</code>. Половина проблем с коллизиями объясняется тем, что хитбокс не там, где вы думали.</p></div>
+
+<h3>Разрешение столкновения: раздельные оси</h3>
+
+<p>Наивный подход «столкнулись — отменить движение» приводит к тому, что персонаж прилипает к стенам: при движении по диагонали блокируются обе оси сразу.</p>
+
+<p>Правильный приём — двигаться и проверяться по одной оси за раз:</p>
+
+<pre><code>void MoveAndCollide(Player *p, Vector2 move)
+{
+    // --- Ось X ---
+    p-&gt;pos.x += move.x;
+    Rectangle box = PlayerHitbox(p);
+
+    for (int i = 0; i &lt; wallCount; i++) {
+        if (CheckCollisionRecs(box, walls[i])) {
+            if (move.x &gt; 0) p-&gt;pos.x = walls[i].x - box.width - 6;
+            else if (move.x &lt; 0) p-&gt;pos.x = walls[i].x + walls[i].width - 6;
+            p-&gt;vel.x = 0;
+            box = PlayerHitbox(p);
+        }
+    }
+
+    // --- Ось Y ---
+    p-&gt;pos.y += move.y;
+    box = PlayerHitbox(p);
+    p-&gt;onGround = false;
+
+    for (int i = 0; i &lt; wallCount; i++) {
+        if (CheckCollisionRecs(box, walls[i])) {
+            if (move.y &gt; 0) {                       // падал вниз
+                p-&gt;pos.y = walls[i].y - box.height - 4;
+                p-&gt;onGround = true;                 // встал на землю
+            } else if (move.y &lt; 0) {                // прыгал вверх
+                p-&gt;pos.y = walls[i].y + walls[i].height - 4;
+            }
+            p-&gt;vel.y = 0;
+            box = PlayerHitbox(p);
+        }
+    }
+}</code></pre>
+
+<div class="note"><p><b>Почему это работает.</b> Разделив оси, мы точно знаем, с какой стороны произошло касание: если двигались вправо и столкнулись — упираемся в левую грань препятствия. Из одного факта «прямоугольники пересеклись» это вывести невозможно, и именно поэтому попытки решить всё одной проверкой заканчиваются странными выталкиваниями.</p></div>
+
+<h3>Флаг onGround</h3>
+
+<p>Обратите внимание: <code>onGround</code> сбрасывается в <code>false</code> перед проверкой по Y и поднимается только при столкновении сверху. Это единственный надёжный способ узнать, стоит ли персонаж на земле, — и от него зависит, можно ли прыгать.</p>
+
+<h3>Туннелирование</h3>
+
+<p>Быстрый объект за один кадр может перескочить сквозь тонкую стену: в предыдущем кадре он был перед ней, в следующем — уже за. Столкновения никогда не происходит.</p>
+
+<pre><code>кадр N:     [●]  │стена│
+кадр N+1:        │стена│   [●]</code></pre>
+
+<p>Три способа справиться:</p>
+
+<ul>
+<li><b>Ограничить скорость.</b> Если объект за кадр не проходит больше половины толщины препятствия, туннелирования не будет. Самое простое решение.</li>
+<li><b>Разбить шаг.</b> Двигать объект несколькими маленькими шагами с проверкой после каждого.</li>
+<li><b>Луч вместо точки.</b> Проверять отрезок от старой позиции к новой. Для пуль это единственный вменяемый вариант.</li>
+</ul>
+
+<pre><code>void MoveSubstepped(Player *p, Vector2 move)
+{
+    float dist = fmaxf(fabsf(move.x), fabsf(move.y));
+    int steps = (int)(dist / 8.0f) + 1;          // шаг не больше 8 пикселей
+
+    Vector2 step = { move.x / steps, move.y / steps };
+    for (int i = 0; i &lt; steps; i++) MoveAndCollide(p, step);
+}</code></pre>
+
+<h3>Оптимизация: не перебирайте всё подряд</h3>
+
+<p>Проверка каждого объекта с каждым — это квадрат от их количества. Сто пуль и сто врагов — десять тысяч проверок за кадр. Пока объектов немного, это не проблема, но растёт быстро.</p>
+
+<p>Два простых способа сократить работу:</p>
+
+<pre><code>// 1. Отсеять по расстоянию до дорогой проверки
+float dx = a.pos.x - b.pos.x;
+float dy = a.pos.y - b.pos.y;
+if (dx*dx + dy*dy &gt; 100*100) continue;      // дальше 100 пикселей — пропускаем
+
+// 2. Отсеять по видимости
+if (!CheckCollisionRecs(obj.hitbox, screenRect)) continue;</code></pre>
+
+<p>Заметьте, что в первом случае сравниваются квадраты расстояний — извлекать корень не нужно, и это ощутимо дешевле.</p>
+
+<div class="warn"><p><b>Не оптимизируйте раньше времени.</b> Пространственные сетки и деревья квадрантов нужны, когда объектов тысячи. До этого простой двойной цикл с отсечением по расстоянию работает быстрее, чем вы ожидаете, и содержит несоизмеримо меньше багов.</p></div>
+
+<div class="task"><div class="h">Проверьте себя</div><ul>
+<li>Сделайте персонажа, который не проходит сквозь набор прямоугольных стен.</li>
+<li>Добавьте отладочную отрисовку хитбоксов по F1.</li>
+<li>Разгоните персонажа до 3000 пикселей в секунду и убедитесь, что он проваливается сквозь стены. Почините подшагами.</li>
+</ul></div>
+
+<div class="pager"></div>
+</article>
+
+
+<article class="ch" id="ch16" data-part="Часть IV · Механика" data-title="Платформер: гравитация и прыжок">
+<div class="ch-meta"><span class="num">16</span><span>Часть IV · Механика</span></div>
+<h2>Платформер: гравитация и прыжок</h2>
+
+<p>Прыжок — это то, что игрок чувствует сильнее всего. Формально он состоит из трёх строчек кода, но разница между «прыжок как в Mario» и «прыжок как в плохой флеш-игре» именно в мелких деталях, которые мы сейчас разберём.</p>
+
+<h3>База</h3>
+
+<pre><code>#define GRAVITY      1800.0f    // пикселей в секунду за секунду
+#define JUMP_SPEED   -620.0f    // отрицательная — вверх
+#define MOVE_SPEED    280.0f
+#define MAX_FALL      900.0f    // предел скорости падения
+
+void PlayerUpdate(Player *p, float dt)
+{
+    // Горизонталь
+    float dir = 0;
+    if (IsKeyDown(KEY_D)) dir += 1;
+    if (IsKeyDown(KEY_A)) dir -= 1;
+    p-&gt;vel.x = dir * MOVE_SPEED;
+
+    // Гравитация
+    p-&gt;vel.y += GRAVITY * dt;
+    if (p-&gt;vel.y &gt; MAX_FALL) p-&gt;vel.y = MAX_FALL;
+
+    // Прыжок
+    if (IsKeyPressed(KEY_SPACE) &amp;&amp; p-&gt;onGround) {
+        p-&gt;vel.y = JUMP_SPEED;
+        p-&gt;onGround = false;
+    }
+
+    MoveAndCollide(p, (Vector2){ p-&gt;vel.x * dt, p-&gt;vel.y * dt });
+}</code></pre>
+
+<p>Это работает. Теперь сделаем, чтобы это ощущалось хорошо.</p>
+
+<h3>Coyote time</h3>
+
+<p>Игрок сбежал с края платформы и нажал прыжок на два кадра позже, чем нужно. Формально он уже в воздухе, прыжок не срабатывает, игрок падает и злится — при том, что субъективно он «нажал вовремя».</p>
+
+<p>Решение — дать небольшое окно после схода с платформы, в течение которого прыжок ещё засчитывается. Приём назван в честь койота из мультфильмов, который какое-то время стоит в воздухе, прежде чем упасть.</p>
+
+<pre><code>float coyote = 0.0f;
+const float COYOTE_TIME = 0.1f;      // 100 миллисекунд
+
+// в обновлении:
+if (p-&gt;onGround) coyote = COYOTE_TIME;
+else             coyote -= dt;
+
+if (IsKeyPressed(KEY_SPACE) &amp;&amp; coyote &gt; 0) {
+    p-&gt;vel.y = JUMP_SPEED;
+    coyote = 0;                       // израсходовали
+}</code></pre>
+
+<h3>Jump buffer</h3>
+
+<p>Зеркальная проблема: игрок нажал прыжок за долю секунды до приземления. Персонаж в этот момент ещё в воздухе, нажатие пропадает, и приземлившись он просто стоит.</p>
+
+<pre><code>float jumpBuffer = 0.0f;
+const float BUFFER_TIME = 0.12f;
+
+// в обновлении:
+if (IsKeyPressed(KEY_SPACE)) jumpBuffer = BUFFER_TIME;
+else                         jumpBuffer -= dt;
+
+if (jumpBuffer &gt; 0 &amp;&amp; coyote &gt; 0) {
+    p-&gt;vel.y = JUMP_SPEED;
+    jumpBuffer = 0;
+    coyote = 0;
+}</code></pre>
+
+<div class="note"><p><b>Эти два приёма стоят больше, чем любая графика.</b> Они занимают восемь строк и превращают управление из раздражающего в отзывчивое. В коммерческих платформерах они есть практически всегда — просто игрок их не замечает, потому что замечать нечего: всё работает так, как он ожидает.</p></div>
+
+<h3>Переменная высота прыжка</h3>
+
+<p>Короткое нажатие — низкий прыжок, долгое — высокий. Реализуется обрезанием скорости при отпускании клавиши:</p>
+
+<pre><code>if (IsKeyReleased(KEY_SPACE) &amp;&amp; p-&gt;vel.y &lt; 0) {
+    p-&gt;vel.y *= 0.4f;      // отпустил рано — гасим подъём
+}</code></pre>
+
+<p>Условие <code>vel.y &lt; 0</code> нужно, чтобы обрезание работало только на подъёме. На спуске оно замедляло бы падение, что выглядит неестественно.</p>
+
+<h3>Разная гравитация вверх и вниз</h3>
+
+<p>Реалистичная парабола ощущается вяло: персонаж слишком долго висит в верхней точке. Почти все хорошие платформеры делают падение быстрее подъёма:</p>
+
+<pre><code>float g = (p-&gt;vel.y &lt; 0) ? GRAVITY : GRAVITY * 1.6f;
+p-&gt;vel.y += g * dt;</code></pre>
+
+<p>Прыжок становится «острым»: быстрый взлёт, короткая задержка наверху, резкое падение. Это неправдоподобно физически и правильно на ощупь.</p>
+
+<h3>Ускорение и трение вместо мгновенной скорости</h3>
+
+<p>Мгновенная установка <code>vel.x = dir * SPEED</code> даёт резкое, «ледяное» управление. Плавный разгон приятнее:</p>
+
+<pre><code>const float ACCEL = 2400.0f;
+const float FRICTION = 1800.0f;
+
+if (dir != 0) {
+    p-&gt;vel.x += dir * ACCEL * dt;
+    if (fabsf(p-&gt;vel.x) &gt; MOVE_SPEED) p-&gt;vel.x = dir * MOVE_SPEED;
+} else {
+    // торможение к нулю
+    if (p-&gt;vel.x &gt; 0) { p-&gt;vel.x -= FRICTION * dt; if (p-&gt;vel.x &lt; 0) p-&gt;vel.x = 0; }
+    if (p-&gt;vel.x &lt; 0) { p-&gt;vel.x += FRICTION * dt; if (p-&gt;vel.x &gt; 0) p-&gt;vel.x = 0; }
+}</code></pre>
+
+<p>Меняя <code>ACCEL</code> и <code>FRICTION</code>, можно получить что угодно: от липкого управления в Celeste до скользкого льда.</p>
+
+<h3>Односторонние платформы</h3>
+
+<p>Платформа, сквозь которую можно пройти снизу, но на которую можно встать сверху:</p>
+
+<pre><code>bool ShouldCollideWithPlatform(const Player *p, Rectangle plat, float moveY)
+{
+    if (moveY &lt; 0) return false;                    // прыгаем вверх — пропускаем
+
+    float feetBefore = p-&gt;pos.y + p-&gt;height - moveY;
+    return feetBefore &lt;= plat.y + 2;                // ноги были выше платформы
+}</code></pre>
+
+<p>Ключ — проверять, где ноги персонажа были <b>до</b> движения. Если он приходит сверху, столкновение засчитывается, если снизу — нет.</p>
+
+<div class="tip"><p><b>Настраивайте константы в игре, а не в коде.</b> Повесьте <code>GRAVITY</code> и <code>JUMP_SPEED</code> на клавиши и выводите значения на экран. Подобрать прыжок на ощупь за пять минут гораздо продуктивнее, чем пересобирать проект после каждой правки числа.</p></div>
+
+<div class="task"><div class="h">Проверьте себя</div><ul>
+<li>Соберите платформер с гравитацией, прыжком и коллизиями с тайловой картой.</li>
+<li>Добавьте coyote time и jump buffer. Попробуйте отключить их и почувствуйте разницу.</li>
+<li>Сделайте переменную высоту прыжка и разную гравитацию на подъёме и спуске.</li>
+</ul></div>
+
+<div class="pager"></div>
+</article>
+
+
+<article class="ch" id="ch17" data-part="Часть IV · Механика" data-title="Векторы на практике (raymath)">
+<div class="ch-meta"><span class="num">17</span><span>Часть IV · Механика</span></div>
+<h2>Векторы на практике (raymath)</h2>
+
+<p>В C нет перегрузки операторов, поэтому <code>a + b</code> для векторов не работает. Вся арифметика делается функциями из <code>raymath.h</code> — отдельного заголовка, который надо подключить явно.</p>
+
+<pre><code>#include &lt;raylib.h&gt;
+#include "raymath.h"</code></pre>
+
+<h3>Основные операции</h3>
+
+<pre><code>Vector2 a = { 3, 4 };
+Vector2 b = { 1, 2 };
+
+Vector2Add(a, b);          // { 4, 6 }
+Vector2Subtract(a, b);     // { 2, 2 }
+Vector2Scale(a, 2.0f);     // { 6, 8 }   — умножение на число
+Vector2Negate(a);          // { -3, -4 }
+
+Vector2Length(a);          // 5.0        — длина
+Vector2Distance(a, b);     // расстояние между точками
+Vector2Normalize(a);       // { 0.6, 0.8 } — та же сторона, длина 1</code></pre>
+
+<h3>Задача 1: движение к цели</h3>
+
+<p>Классика — враг, преследующий игрока. Направление к цели, нормализованное, умноженное на скорость:</p>
+
+<pre><code>void EnemyChase(Enemy *e, Vector2 target, float dt)
+{
+    Vector2 dir = Vector2Subtract(target, e-&gt;pos);   // вектор к цели
+    dir = Vector2Normalize(dir);                      // только направление
+    Vector2 step = Vector2Scale(dir, e-&gt;speed * dt);  // сколько пройти за кадр
+
+    e-&gt;pos = Vector2Add(e-&gt;pos, step);
+}</code></pre>
+
+<p>Без нормализации враг двигался бы тем быстрее, чем дальше находится игрок, — типичный баг.</p>
+
+<div class="warn"><p><b>Нормализация нулевого вектора.</b> Если враг стоит ровно в точке цели, <code>dir</code> будет <code>{0,0}</code>, и деление на длину даст NaN. Позиция превратится в «не число», объект исчезнет с экрана, и найти причину будет тяжело. Страхуйтесь проверкой:</p>
+<pre><code>float dist = Vector2Distance(target, e-&gt;pos);
+if (dist &gt; 1.0f) { /* двигаемся */ }</code></pre></div>
+
+<h3>Задача 2: диагональ не быстрее прямой</h3>
+
+<p>Проблема из пятой главы решается той же нормализацией:</p>
+
+<pre><code>Vector2 dir = { 0, 0 };
+if (IsKeyDown(KEY_D)) dir.x += 1;
+if (IsKeyDown(KEY_A)) dir.x -= 1;
+if (IsKeyDown(KEY_S)) dir.y += 1;
+if (IsKeyDown(KEY_W)) dir.y -= 1;
+
+if (dir.x != 0 || dir.y != 0) {
+    dir = Vector2Normalize(dir);                  // {1,1} → {0.707, 0.707}
+    p-&gt;pos = Vector2Add(p-&gt;pos, Vector2Scale(dir, speed * dt));
+}</code></pre>
+
+<h3>Задача 3: выстрел в направлении мыши</h3>
+
+<pre><code>void Shoot(Vector2 from, Vector2 mouseWorld)
+{
+    Vector2 dir = Vector2Normalize(Vector2Subtract(mouseWorld, from));
+    SpawnBullet(from, Vector2Scale(dir, BULLET_SPEED));
+}</code></pre>
+
+<h3>Задача 4: поворот спрайта в сторону движения</h3>
+
+<p>Угол получают через <code>atan2f</code>, переводя радианы в градусы:</p>
+
+<pre><code>float angle = atan2f(vel.y, vel.x) * RAD2DEG;
+
+Rectangle src  = { 0, 0, tex.width, tex.height };
+Rectangle dest = { pos.x, pos.y, tex.width, tex.height };
+Vector2 origin = { tex.width/2.0f, tex.height/2.0f };
+
+DrawTexturePro(tex, src, dest, origin, angle, WHITE);</code></pre>
+
+<p><code>RAD2DEG</code> и <code>DEG2RAD</code> определены в <code>raymath.h</code>. Спрайт при этом должен быть нарисован смотрящим вправо — нулевой угол соответствует направлению по оси X.</p>
+
+<h3>Задача 5: отскок от поверхности</h3>
+
+<p><code>Vector2Reflect</code> отражает вектор относительно нормали — идеально для мяча, пули, частицы:</p>
+
+<pre><code>Vector2 normal = { 0, -1 };                          // нормаль пола: вверх
+ball.vel = Vector2Reflect(ball.vel, normal);
+ball.vel = Vector2Scale(ball.vel, 0.85f);            // потеря энергии</code></pre>
+
+<h3>Задача 6: плавное следование</h3>
+
+<p><code>Vector2Lerp</code> интерполирует между двумя точками. Применённый каждый кадр, он даёт эффект пружины:</p>
+
+<pre><code>// камера мягко догоняет игрока
+camera.target = Vector2Lerp(camera.target, player.pos, 6.0f * dt);
+
+// а MoveTowards даёт постоянную скорость без замедления в конце
+e-&gt;pos = Vector2MoveTowards(e-&gt;pos, target, e-&gt;speed * dt);</code></pre>
+
+<h3>Скалярное произведение: угол зрения врага</h3>
+
+<p><code>Vector2DotProduct</code> двух нормализованных векторов даёт косинус угла между ними: 1 — смотрят в одну сторону, 0 — перпендикулярны, -1 — противоположны. Отсюда конус видимости:</p>
+
+<pre><code>bool EnemySees(const Enemy *e, Vector2 target, float fovDegrees, float range)
+{
+    Vector2 toTarget = Vector2Subtract(target, e-&gt;pos);
+    if (Vector2Length(toTarget) &gt; range) return false;
+
+    Vector2 dir = Vector2Normalize(toTarget);
+    float dot = Vector2DotProduct(e-&gt;facing, dir);
+
+    return dot &gt; cosf(fovDegrees * 0.5f * DEG2RAD);
+}</code></pre>
+
+<h3>Полезные скалярные функции</h3>
+
+<pre><code>Clamp(value, min, max);                   // зажать в диапазон
+Lerp(a, b, t);                             // линейная интерполяция чисел
+Remap(v, inA, inB, outA, outB);            // перевести из одного диапазона в другой
+Wrap(angle, 0, 360);                       // зациклить</code></pre>
+
+<p><code>Remap</code> особенно удобен для полосок здоровья и любых индикаторов:</p>
+
+<pre><code>float barWidth = Remap(player.health, 0, 100, 0, 200);   // hp → ширина полоски
+DrawRectangle(20, 20, (int)barWidth, 16, RED);</code></pre>
+
+<div class="tip"><p><b>Оптимизация сравнений расстояний.</b> <code>Vector2Length</code> и <code>Vector2Distance</code> внутри извлекают квадратный корень. Если вам нужно только сравнить, что ближе, используйте <code>Vector2DistanceSqr</code> и сравнивайте с квадратом порога: <code>if (Vector2DistanceSqr(a,b) &lt; 100*100)</code>. Результат тот же, работы меньше.</p></div>
+
+<div class="task"><div class="h">Проверьте себя</div><ul>
+<li>Сделайте врага, преследующего игрока с постоянной скоростью.</li>
+<li>Добавьте стрельбу в сторону курсора с поворотом спрайта пули.</li>
+<li>Реализуйте конус видимости врага и рисуйте его отладочно.</li>
+</ul></div>
+
+<div class="pager"></div>
+</article>
+<article class="ch" id="ch18" data-part="Часть V · Полировка" data-title="Звук и музыка">
+<div class="ch-meta"><span class="num">18</span><span>Часть V · Полировка</span></div>
+<h2>Звук и музыка</h2>
+
+<h3>Sound против Music</h3>
+
+<table>
+<tr><th></th><th><code>Sound</code></th><th><code>Music</code></th></tr>
+<tr><td>Как хранится</td><td>распакован в памяти целиком</td><td>стримится с диска по кусочкам</td></tr>
+<tr><td>Для чего</td><td>выстрелы, шаги, удары, звуки интерфейса</td><td>фоновая музыка, длинная эмбиент-дорожка</td></tr>
+<tr><td>Требует обновления</td><td>нет</td><td>да, <code>UpdateMusicStream</code> каждый кадр</td></tr>
+<tr><td>Формат</td><td>WAV (быстрее всего)</td><td>OGG, MP3</td></tr>
+</table>
+
+<p>Правило: короче двух-трёх секунд — <code>Sound</code>, длиннее — <code>Music</code>. Минутный трек, загруженный как <code>Sound</code>, займёт в памяти десятки мегабайт распакованного PCM.</p>
+
+<h3>Начало работы</h3>
+
+<pre><code>InitWindow(800, 450, "Звук");
+InitAudioDevice();                          // отдельная инициализация!
+SetTargetFPS(60);
+
+Sound shoot = LoadSound("resources/shoot.wav");
+Music bgm   = LoadMusicStream("resources/theme.ogg");
+
+PlayMusicStream(bgm);
+SetMusicVolume(bgm, 0.4f);
+
+while (!WindowShouldClose()) {
+    UpdateMusicStream(bgm);                 // обязательно каждый кадр
+
+    if (IsKeyPressed(KEY_SPACE)) PlaySound(shoot);
+
+    BeginDrawing();
+        ClearBackground(RAYWHITE);
+    EndDrawing();
+}
+
+UnloadSound(shoot);
+UnloadMusicStream(bgm);
+CloseAudioDevice();
+CloseWindow();</code></pre>
+
+<div class="warn"><p><b>Две главные ошибки со звуком.</b> Первая — забыть <code>InitAudioDevice()</code>: звуки загрузятся, <code>PlaySound</code> отработает без ошибок, но тишина. Вторая — забыть <code>UpdateMusicStream</code> в цикле: музыка проиграет доли секунды и замолчит, потому что буферы никто не пополняет.</p></div>
+
+<h3>Один звук внахлёст</h3>
+
+<p>Если выстрелы идут чаще, чем длится звук, повторный <code>PlaySound</code> оборвёт предыдущий — получится дребезжание вместо очереди. Решение — псевдонимы, которые делят данные, но имеют независимое состояние воспроизведения:</p>
+
+<pre><code>#define SHOOT_VOICES 8
+
+Sound shoot;
+Sound shootVoices[SHOOT_VOICES];
+int voiceIndex = 0;
+
+void AudioInit(void)
+{
+    shoot = LoadSound("resources/shoot.wav");
+    for (int i = 0; i &lt; SHOOT_VOICES; i++)
+        shootVoices[i] = LoadSoundAlias(shoot);
+}
+
+void PlayShoot(void)
+{
+    PlaySound(shootVoices[voiceIndex]);
+    voiceIndex = (voiceIndex + 1) % SHOOT_VOICES;
+}
+
+void AudioUnload(void)
+{
+    for (int i = 0; i &lt; SHOOT_VOICES; i++) UnloadSoundAlias(shootVoices[i]);
+    UnloadSound(shoot);                    // оригинал выгружаем последним
+}</code></pre>
+
+<p><code>LoadSoundAlias</code> не копирует сэмплы — восемь голосов занимают столько же памяти, сколько один звук. Порядок выгрузки важен: сначала псевдонимы, потом оригинал.</p>
+
+<h3>Вариации, чтобы не приедалось</h3>
+
+<p>Один и тот же звук шага, повторённый триста раз, начинает раздражать. Небольшой случайный разброс высоты и громкости решает проблему почти полностью:</p>
+
+<pre><code>void PlayVaried(Sound s)
+{
+    SetSoundPitch(s,  0.9f + GetRandomValue(0, 200) / 1000.0f);   // 0.90..1.10
+    SetSoundVolume(s, 0.8f + GetRandomValue(0, 200) / 1000.0f);   // 0.80..1.00
+    PlaySound(s);
+}</code></pre>
+
+<div class="tip"><p><b>Панорама по позиции на экране.</b> <code>SetSoundPan</code> принимает от -1 (лево) до 1 (право). Свяжите её с координатой источника: <code>SetSoundPan(s, Remap(worldX, camLeft, camRight, -0.7f, 0.7f))</code>. Мир сразу станет объёмнее, а стоит это одной строчки.</p></div>
+
+<h3>Громкость и настройки</h3>
+
+<pre><code>SetMasterVolume(0.8f);              // общая громкость
+SetSoundVolume(shoot, 0.5f);        // отдельного звука
+SetMusicVolume(bgm, 0.3f);          // музыки</code></pre>
+
+<p>Разумная практика — держать три ползунка: общий, эффекты, музыка. Игрок почти всегда хочет приглушить музыку, оставив эффекты.</p>
+
+<h3>Затухание музыки при смене сцены</h3>
+
+<pre><code>float musicFade = 1.0f;
+
+// при переходе:
+musicFade -= dt * 1.5f;
+if (musicFade &lt; 0) musicFade = 0;
+SetMusicVolume(bgm, 0.4f * musicFade);
+
+if (musicFade == 0) {
+    StopMusicStream(bgm);
+    PlayMusicStream(nextTrack);
+}</code></pre>
+
+<h3>Где брать звуки</h3>
+
+<p>Собственный генератор raylib называется <b>rFXGen</b> — он входит в набор инструментов проекта и делает ретро-эффекты в стиле 8-бит буквально нажатием кнопки «случайный выстрел». Из внешних источников: freesound.org (лицензии Creative Commons, читайте условия), opengameart.org, itch.io в разделе бесплатных ассетов.</p>
+
+<div class="task"><div class="h">Проверьте себя</div><ul>
+<li>Добавьте в свою игру звук выстрела и фоновую музыку.</li>
+<li>Сделайте восемь голосов для звука выстрела и проверьте на быстрой стрельбе.</li>
+<li>Добавьте вариацию высоты тона и убедитесь, что звук перестал приедаться.</li>
+</ul></div>
+
+<div class="pager"></div>
+</article>
+
+
+<article class="ch" id="ch19" data-part="Часть V · Полировка" data-title="Частицы и ощущение отдачи">
+<div class="ch-meta"><span class="num">19</span><span>Часть V · Полировка</span></div>
+<h2>Частицы и ощущение отдачи</h2>
+
+<p>Разница между «работает» и «приятно играть» складывается из мелочей, каждая из которых занимает десяток строк. Разберём набор, который даёт максимальный эффект за минимальные усилия.</p>
+
+<h3>Система частиц</h3>
+
+<pre><code>#define MAX_PARTICLES 512
+
+typedef struct Particle {
+    Vector2 pos, vel;
+    float   life, maxLife;
+    float   size;
+    Color   color;
+    bool    active;
+} Particle;
+
+Particle particles[MAX_PARTICLES];
+
+void SpawnParticle(Vector2 pos, Vector2 vel, float life, float size, Color c)
+{
+    for (int i = 0; i &lt; MAX_PARTICLES; i++) {
+        if (particles[i].active) continue;
+
+        particles[i] = (Particle){
+            .pos = pos, .vel = vel,
+            .life = life, .maxLife = life,
+            .size = size, .color = c, .active = true
+        };
+        return;
+    }
+}
+
+void UpdateParticles(float dt)
+{
+    for (int i = 0; i &lt; MAX_PARTICLES; i++) {
+        Particle *p = &amp;particles[i];
+        if (!p-&gt;active) continue;
+
+        p-&gt;pos = Vector2Add(p-&gt;pos, Vector2Scale(p-&gt;vel, dt));
+        p-&gt;vel.y += 400.0f * dt;              // гравитация
+        p-&gt;vel = Vector2Scale(p-&gt;vel, 0.98f); // сопротивление воздуха
+
+        p-&gt;life -= dt;
+        if (p-&gt;life &lt;= 0) p-&gt;active = false;
+    }
+}
+
+void DrawParticles(void)
+{
+    for (int i = 0; i &lt; MAX_PARTICLES; i++) {
+        const Particle *p = &amp;particles[i];
+        if (!p-&gt;active) continue;
+
+        float t = p-&gt;life / p-&gt;maxLife;        // 1 в начале, 0 в конце
+        DrawCircleV(p-&gt;pos, p-&gt;size * t, Fade(p-&gt;color, t));
+    }
+}</code></pre>
+
+<p>Ключевая идея — коэффициент <code>t</code>: отношение остатка жизни к полной. Умножая на него размер и прозрачность, получаем частицу, которая одновременно сжимается и растворяется.</p>
+
+<h3>Взрыв</h3>
+
+<pre><code>void Explosion(Vector2 pos, int count, Color c)
+{
+    for (int i = 0; i &lt; count; i++) {
+        float angle = GetRandomValue(0, 359) * DEG2RAD;
+        float speed = GetRandomValue(80, 300);
+
+        Vector2 vel = { cosf(angle) * speed, sinf(angle) * speed };
+        float life  = GetRandomValue(30, 80) / 100.0f;
+        float size  = GetRandomValue(2, 6);
+
+        SpawnParticle(pos, vel, life, size, c);
+    }
+}</code></pre>
+
+<p>Случайный угол по всему кругу, случайная скорость, случайное время жизни. Три источника разброса — и взрыв уже не выглядит механическим.</p>
+
+<h3>Шлейф</h3>
+
+<pre><code>// в обновлении игрока, если он двигается
+if (fabsf(p-&gt;vel.x) &gt; 50 &amp;&amp; p-&gt;onGround) {
+    trailTimer += dt;
+    if (trailTimer &gt; 0.04f) {
+        trailTimer = 0;
+        Vector2 dust = { p-&gt;pos.x, p-&gt;pos.y + 20 };
+        SpawnParticle(dust, (Vector2){ -p-&gt;vel.x * 0.15f, -30 },
+                      0.4f, 4, LIGHTGRAY);
+    }
+}</code></pre>
+
+<h3>Приёмы обратной связи</h3>
+
+<p>Всё дальнейшее — это то, что игрок не замечает по отдельности, но замечает по совокупности.</p>
+
+<h4>Пауза удара (hitstop)</h4>
+
+<p>При попадании игра замирает на несколько кадров. Удар начинает ощущаться весомым:</p>
+
+<pre><code>float hitstop = 0.0f;
+
+// при попадании: hitstop = 0.06f;
+
+// в начале обновления:
+if (hitstop &gt; 0) {
+    hitstop -= GetFrameTime();
+    // пропускаем всю игровую логику, но рисуем
+} else {
+    UpdateGame(dt);
+}</code></pre>
+
+<h4>Тряска экрана</h4>
+
+<p>Из тринадцатой главы. Важно не переборщить: 4–8 пикселей на обычный удар, 15–20 на взрыв.</p>
+
+<h4>Вспышка при уроне</h4>
+
+<pre><code>// у врага: float flash = 0;
+// при попадании: flash = 0.1f;
+
+if (e-&gt;flash &gt; 0) e-&gt;flash -= dt;
+DrawTextureV(e-&gt;tex, e-&gt;pos, e-&gt;flash &gt; 0 ? WHITE : e-&gt;tint);</code></pre>
+
+<p>Приём работает лучше, если спрайт на мгновение становится полностью белым. Для этого нужен простой шейдер, но и обычная подкраска в <code>WHITE</code> уже заметна.</p>
+
+<h4>Squash and stretch</h4>
+
+<p>Деформация при прыжке и приземлении — самый дешёвый способ оживить статичный спрайт:</p>
+
+<pre><code>float squash = 1.0f;
+
+// при прыжке:      squash = 1.3f;   // вытянуть вверх
+// при приземлении: squash = 0.7f;   // сплющить
+
+squash += (1.0f - squash) * 12.0f * dt;   // упруго возвращается к единице
+
+Rectangle dest = {
+    p-&gt;pos.x, p-&gt;pos.y,
+    tex.width  / squash,      // уже, когда выше
+    tex.height * squash
+};</code></pre>
+
+<h4>Всплывающие числа урона</h4>
+
+<pre><code>typedef struct FloatText {
+    Vector2 pos;
+    float life;
+    int value;
+    bool active;
+} FloatText;
+
+// при обновлении:
+ft-&gt;pos.y -= 40 * dt;
+ft-&gt;life -= dt;
+
+// при отрисовке:
+DrawTextEx(font, TextFormat("%d", ft-&gt;value), ft-&gt;pos, 22, 1,
+           Fade(YELLOW, ft-&gt;life / 0.8f));</code></pre>
+
+<div class="note"><p><b>Про соотношение усилий.</b> Всё перечисленное — примерно двести строк кода. По влиянию на впечатление от игры они стоят больше, чем несколько недель работы над новыми механиками. Если игра ощущается «пресной», начинать стоит именно отсюда, а не с добавления контента.</p></div>
+
+<div class="tip"><p><b>Мера.</b> Тряска на каждый выстрел утомляет через минуту. Пауза удара длиннее 0.1 секунды превращается в лаг. Начинайте с величин вдвое меньших, чем кажется правильным, и добавляйте по чуть-чуть.</p></div>
+
+<div class="task"><div class="h">Проверьте себя</div><ul>
+<li>Добавьте систему частиц и взрыв при уничтожении врага.</li>
+<li>Сделайте пыль из-под ног при беге.</li>
+<li>Добавьте hitstop, вспышку и тряску. Отключите их по очереди и сравните ощущения.</li>
+</ul></div>
+
+<div class="pager"></div>
+</article>
+
+
+<article class="ch" id="ch20" data-part="Часть VI · Проект" data-title="Игра целиком и сборка">
+<div class="ch-meta"><span class="num">20</span><span>Часть VI · Проект</span></div>
+<h2>Игра целиком и сборка</h2>
+
+<p>Соберём всё пройденное в одну работающую игру — арканоид с состояниями, звуком, частицами и счётом. Код полный, его можно скомпилировать и запустить.</p>
+
+<div class="filename">main.c</div>
+<pre><code>#include &lt;raylib.h&gt;
+#include "raymath.h"
+#include &lt;stdio.h&gt;
+
+#define SCREEN_W 800
+#define SCREEN_H 600
+
+#define BRICK_ROWS  6
+#define BRICK_COLS  12
+#define MAX_PARTICLES 256
+
+typedef enum { STATE_MENU, STATE_PLAY, STATE_WIN, STATE_LOSE } GameState;
+
+typedef struct Brick {
+    Rectangle rec;
+    Color color;
+    bool alive;
+} Brick;
+
+typedef struct Particle {
+    Vector2 pos, vel;
+    float life, maxLife;
+    Color color;
+    bool active;
+} Particle;
+
+// ---------- Состояние ----------
+static GameState state;
+static Rectangle paddle;
+static Vector2   ballPos, ballVel;
+static float     ballR = 9.0f;
+static Brick     bricks[BRICK_ROWS][BRICK_COLS];
+static Particle  particles[MAX_PARTICLES];
+static int       score, lives, bricksLeft;
+static float     shake;
+
+// ---------- Частицы ----------
+static void Spawn(Vector2 pos, Color c)
+{
+    for (int i = 0; i &lt; MAX_PARTICLES; i++) {
+        if (particles[i].active) continue;
+
+        float a = GetRandomValue(0, 359) * DEG2RAD;
+        float s = GetRandomValue(60, 220);
+        float l = GetRandomValue(25, 60) / 100.0f;
+
+        particles[i] = (Particle){
+            .pos = pos,
+            .vel = { cosf(a)*s, sinf(a)*s },
+            .life = l, .maxLife = l,
+            .color = c, .active = true
+        };
+        return;
+    }
+}
+
+static void Burst(Vector2 pos, Color c) { for (int i = 0; i &lt; 14; i++) Spawn(pos, c); }
+
+static void UpdateParticles(float dt)
+{
+    for (int i = 0; i &lt; MAX_PARTICLES; i++) {
+        Particle *p = &amp;particles[i];
+        if (!p-&gt;active) continue;
+
+        p-&gt;pos = Vector2Add(p-&gt;pos, Vector2Scale(p-&gt;vel, dt));
+        p-&gt;vel.y += 380 * dt;
+        p-&gt;life  -= dt;
+        if (p-&gt;life &lt;= 0) p-&gt;active = false;
+    }
+}
+
+static void DrawParticles(void)
+{
+    for (int i = 0; i &lt; MAX_PARTICLES; i++) {
+        const Particle *p = &amp;particles[i];
+        if (!p-&gt;active) continue;
+        float t = p-&gt;life / p-&gt;maxLife;
+        DrawCircleV(p-&gt;pos, 4 * t, Fade(p-&gt;color, t));
+    }
+}
+
+// ---------- Сброс ----------
+static void ResetBall(void)
+{
+    ballPos = (Vector2){ SCREEN_W/2.0f, SCREEN_H - 90 };
+    ballVel = (Vector2){ GetRandomValue(0,1) ? 240 : -240, -320 };
+}
+
+static void ResetGame(void)
+{
+    paddle = (Rectangle){ SCREEN_W/2.0f - 55, SCREEN_H - 45, 110, 16 };
+    score = 0; lives = 3; shake = 0;
+    bricksLeft = BRICK_ROWS * BRICK_COLS;
+
+    for (int i = 0; i &lt; MAX_PARTICLES; i++) particles[i].active = false;
+
+    float bw = (SCREEN_W - 60) / (float)BRICK_COLS;
+    for (int r = 0; r &lt; BRICK_ROWS; r++) {
+        for (int c = 0; c &lt; BRICK_COLS; c++) {
+            bricks[r][c].rec = (Rectangle){ 30 + c*bw + 2, 70 + r*28 + 2, bw - 4, 24 };
+            bricks[r][c].color = ColorFromHSV(r * 42.0f, 0.65f, 0.95f);
+            bricks[r][c].alive = true;
+        }
+    }
+    ResetBall();
+}
+
+// ---------- Логика ----------
+static void UpdatePlay(float dt)
+{
+    // Ракетка
+    if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))  paddle.x -= 620 * dt;
+    if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) paddle.x += 620 * dt;
+    paddle.x = Clamp(paddle.x, 0, SCREEN_W - paddle.width);
+
+    // Мяч
+    ballPos = Vector2Add(ballPos, Vector2Scale(ballVel, dt));
+
+    // Стены
+    if (ballPos.x - ballR &lt;= 0)            { ballPos.x = ballR; ballVel.x *= -1; }
+    if (ballPos.x + ballR &gt;= SCREEN_W)     { ballPos.x = SCREEN_W - ballR; ballVel.x *= -1; }
+    if (ballPos.y - ballR &lt;= 0)            { ballPos.y = ballR; ballVel.y *= -1; }
+
+    // Ракетка: угол отскока зависит от точки касания
+    if (CheckCollisionCircleRec(ballPos, ballR, paddle) &amp;&amp; ballVel.y &gt; 0) {
+        float hit = (ballPos.x - (paddle.x + paddle.width/2)) / (paddle.width/2);
+        float speed = Vector2Length(ballVel) * 1.02f;      // немного ускоряем
+        float angle = hit * 60.0f * DEG2RAD;
+
+        ballVel = (Vector2){ sinf(angle) * speed, -cosf(angle) * speed };
+        ballPos.y = paddle.y - ballR - 1;
+    }
+
+    // Кирпичи
+    for (int r = 0; r &lt; BRICK_ROWS; r++) {
+        for (int c = 0; c &lt; BRICK_COLS; c++) {
+            Brick *b = &amp;bricks[r][c];
+            if (!b-&gt;alive) continue;
+            if (!CheckCollisionCircleRec(ballPos, ballR, b-&gt;rec)) continue;
+
+            b-&gt;alive = false;
+            bricksLeft--;
+            score += 10;
+            shake = 5.0f;
+
+            Vector2 center = { b-&gt;rec.x + b-&gt;rec.width/2, b-&gt;rec.y + b-&gt;rec.height/2 };
+            Burst(center, b-&gt;color);
+
+            // с какой стороны попали — по меньшему перекрытию
+            float overlapX = fminf(ballPos.x + ballR - b-&gt;rec.x,
+                                   b-&gt;rec.x + b-&gt;rec.width - (ballPos.x - ballR));
+            float overlapY = fminf(ballPos.y + ballR - b-&gt;rec.y,
+                                   b-&gt;rec.y + b-&gt;rec.height - (ballPos.y - ballR));
+
+            if (overlapX &lt; overlapY) ballVel.x *= -1;
+            else                     ballVel.y *= -1;
+
+            goto done;      // один кирпич за кадр — иначе мяч мечется
+        }
+    }
+    done:
+
+    // Падение
+    if (ballPos.y - ballR &gt; SCREEN_H) {
+        lives--;
+        shake = 12.0f;
+        if (lives &lt;= 0) state = STATE_LOSE;
+        else ResetBall();
+    }
+
+    if (bricksLeft == 0) state = STATE_WIN;
+
+    if (shake &gt; 0) { shake -= 30 * dt; if (shake &lt; 0) shake = 0; }
+    UpdateParticles(dt);
+}
+
+static void DrawPlay(void)
+{
+    int ox = GetRandomValue(-(int)shake, (int)shake);
+    int oy = GetRandomValue(-(int)shake, (int)shake);
+
+    for (int r = 0; r &lt; BRICK_ROWS; r++)
+        for (int c = 0; c &lt; BRICK_COLS; c++)
+            if (bricks[r][c].alive) {
+                Rectangle b = bricks[r][c].rec;
+                b.x += ox; b.y += oy;
+                DrawRectangleRec(b, bricks[r][c].color);
+                DrawRectangleLinesEx(b, 1, Fade(BLACK, 0.25f));
+            }
+
+    Rectangle pd = paddle; pd.x += ox; pd.y += oy;
+    DrawRectangleRounded(pd, 0.5f, 6, RAYWHITE);
+
+    DrawCircleV((Vector2){ ballPos.x + ox, ballPos.y + oy }, ballR, YELLOW);
+    DrawParticles();
+
+    DrawText(TextFormat("SCORE %d", score), 20, 20, 26, RAYWHITE);
+    DrawText(TextFormat("LIVES %d", lives), SCREEN_W - 140, 20, 26, RAYWHITE);
+}
+
+// ---------- Точка входа ----------
+int main(void)
+{
+    InitWindow(SCREEN_W, SCREEN_H, "Arkanoid");
+    SetTargetFPS(60);
+    ResetGame();
+    state = STATE_MENU;
+
+    while (!WindowShouldClose())
+    {
+        float dt = GetFrameTime();
+        if (dt &gt; 0.05f) dt = 0.05f;
+
+        switch (state) {
+            case STATE_MENU:
+                if (IsKeyPressed(KEY_ENTER)) { ResetGame(); state = STATE_PLAY; }
+                break;
+            case STATE_PLAY:
+                UpdatePlay(dt);
+                break;
+            case STATE_WIN:
+            case STATE_LOSE:
+                UpdateParticles(dt);
+                if (IsKeyPressed(KEY_ENTER)) state = STATE_MENU;
+                break;
+        }
+
+        BeginDrawing();
+            ClearBackground((Color){ 16, 18, 28, 255 });
+
+            switch (state) {
+                case STATE_MENU:
+                    DrawText("ARKANOID", SCREEN_W/2 - 150, 200, 64, RAYWHITE);
+                    DrawText("Enter - start   A/D - move",
+                             SCREEN_W/2 - 165, 300, 22, GRAY);
+                    break;
+                case STATE_PLAY:
+                    DrawPlay();
+                    break;
+                case STATE_WIN:
+                    DrawPlay();
+                    DrawRectangle(0, 0, SCREEN_W, SCREEN_H, Fade(DARKGREEN, 0.65f));
+                    DrawText("YOU WIN", SCREEN_W/2 - 125, 240, 56, RAYWHITE);
+                    DrawText(TextFormat("Score: %d", score),
+                             SCREEN_W/2 - 70, 310, 26, RAYWHITE);
+                    break;
+                case STATE_LOSE:
+                    DrawPlay();
+                    DrawRectangle(0, 0, SCREEN_W, SCREEN_H, Fade(MAROON, 0.65f));
+                    DrawText("GAME OVER", SCREEN_W/2 - 160, 240, 56, RAYWHITE);
+                    DrawText(TextFormat("Score: %d", score),
+                             SCREEN_W/2 - 70, 310, 26, RAYWHITE);
+                    break;
+            }
+        EndDrawing();
+    }
+
+    CloseWindow();
+    return 0;
+}</code></pre>
+
+<pre><code>gcc main.c -o arkanoid $(pkg-config --libs --cflags raylib) -lm
+./arkanoid</code></pre>
+
+<div class="note"><p><b>На что обратить внимание в этом коде.</b> Угол отскока от ракетки зависит от точки касания — это единственное, что превращает арканоид из механической игры в управляемую. Определение стороны попадания в кирпич идёт по меньшему перекрытию: если мяч зашёл в кирпич больше по X, значит пришёл сверху или снизу. <code>goto done</code> обрывает перебор после первого попадания — без этого мяч, задевший два кирпича сразу, дважды меняет направление и остаётся на месте.</p></div>
+
+<h3>Что добавить дальше</h3>
+
+<ul>
+<li>Звуки удара по кирпичу, по ракетке, потери жизни.</li>
+<li>Бонусы, падающие из кирпичей: расширение ракетки, второй мяч, замедление.</li>
+<li>Кирпичи с несколькими уровнями прочности.</li>
+<li>Уровни из текстовых файлов, как в четырнадцатой главе.</li>
+<li>Таблица рекордов через <code>SaveFileText</code>.</li>
+</ul>
+
+<h3>Сохранение данных</h3>
+
+<pre><code>void SaveHighScore(int value)
+{
+    SaveFileText("highscore.txt", TextFormat("%d", value));
+}
+
+int LoadHighScore(void)
+{
+    if (!FileExists("highscore.txt")) return 0;
+
+    char *text = LoadFileText("highscore.txt");
+    int v = TextToInteger(text);
+    UnloadFileText(text);
+    return v;
+}</code></pre>
+
+<p>Для структур сложнее одного числа удобнее бинарная запись:</p>
+
+<pre><code>typedef struct SaveData {
+    int version;
+    int highScore;
+    int levelsUnlocked;
+    float totalPlayTime;
+} SaveData;
+
+void SaveGame(const SaveData *d) {
+    SaveFileData("save.bin", d, sizeof(SaveData));
+}
+
+bool LoadGame(SaveData *d) {
+    int size = 0;
+    unsigned char *bytes = LoadFileData("save.bin", &amp;size);
+    if (bytes == NULL || size != sizeof(SaveData)) return false;
+
+    *d = *(SaveData *)bytes;
+    UnloadFileData(bytes);
+    return d-&gt;version == 1;      // отсекаем сейвы от старых версий
+}</code></pre>
+
+<div class="warn"><p><b>Поле <code>version</code> добавляйте сразу.</b> Как только вы измените структуру сохранения, старые файлы станут несовместимы. Без номера версии игра прочитает мусор и, в лучшем случае, покажет странные значения. В худшем — упадёт.</p></div>
+
+<h3>Сборка релиза</h3>
+
+<h4>Linux</h4>
+
+<pre><code>gcc main.c -o game -O2 $(pkg-config --libs --cflags raylib) -lm</code></pre>
+
+<p>Проблема динамической сборки в том, что у пользователя должна быть установлена raylib. Для распространения лучше собрать статически — тогда получится один самодостаточный файл:</p>
+
+<pre><code>gcc main.c -o game -O2 -I/usr/local/include \
+    /usr/local/lib/libraylib.a -lm -lpthread -ldl -lrt -lX11</code></pre>
+
+<h4>Кросс-компиляция под Windows из Linux</h4>
+
+<pre><code>sudo pacman -S mingw-w64-gcc          # Arch
+# нужна отдельно собранная raylib под mingw
+
+x86_64-w64-mingw32-gcc main.c -o game.exe \
+    -I./raylib-win/include ./raylib-win/lib/libraylib.a \
+    -lopengl32 -lgdi32 -lwinmm -static</code></pre>
+
+<h4>Веб через Emscripten</h4>
+
+<p>raylib собирается в WebAssembly — игру можно выложить на itch.io и играть в браузере. Единственное существенное изменение в коде: главный цикл в вебе нельзя писать через <code>while</code>, браузер должен сам вызывать функцию кадра.</p>
+
+<pre><code>#if defined(PLATFORM_WEB)
+    #include &lt;emscripten/emscripten.h&gt;
+#endif
+
+void UpdateFrame(void)      // одна итерация цикла
+{
+    float dt = GetFrameTime();
+    UpdateGame(dt);
+
+    BeginDrawing();
+        ClearBackground(RAYWHITE);
+        DrawGame();
+    EndDrawing();
+}
+
+int main(void)
+{
+    InitWindow(800, 450, "Web");
+
+#if defined(PLATFORM_WEB)
+    emscripten_set_main_loop(UpdateFrame, 0, 1);
+#else
+    SetTargetFPS(60);
+    while (!WindowShouldClose()) UpdateFrame();
+#endif
+
+    CloseWindow();
+    return 0;
+}</code></pre>
+
+<pre><code>emcc main.c -o game.html \
+    -Os -I. libraylib.web.a -s USE_GLFW=3 -s ASYNCIFY \
+    --preload-file resources \
+    -DPLATFORM_WEB</code></pre>
+
+<p>Флаг <code>--preload-file</code> упакует папку с ресурсами в виртуальную файловую систему — без него игра не найдёт свои текстуры.</p>
+
+<h3>Куда двигаться дальше</h3>
+
+<ul>
+<li><b>Примеры raylib</b> — около 150 самодостаточных файлов на raylib.com/examples. Лучший источник по любой конкретной задаче: шейдеры, 3D, RenderTexture, аудиопроцессинг.</li>
+<li><b>raygui</b> — библиотека интерфейса из того же проекта, один заголовочный файл. Кнопки, слайдеры, списки — незаменима для собственных редакторов уровней.</li>
+<li><b>Discord raylib</b> — самое активное место сообщества, автор библиотеки отвечает лично.</li>
+<li><b>Исходники самой raylib</b> — они читаемые, и это редкий случай, когда изучение внутренностей библиотеки действительно окупается. Файл <code>rcore.c</code> покажет, как устроен игровой цикл на уровне платформы.</li>
+</ul>
+
+<div class="tip"><p><b>Последний совет.</b> Доводите маленькие игры до конца. Незаконченный амбициозный проект учит меньше, чем три завершённые простые игры: доведение до релиза заставляет разобраться с меню, паузой, сохранением, сборкой и всем тем, что никогда не встречается в туториалах, но составляет половину работы.</p></div>
+
+<div class="task"><div class="h">Финальное задание</div><ul>
+<li>Соберите арканоид, добавьте в него звук и хотя бы один вид бонуса.</li>
+<li>Сделайте сохранение рекорда между запусками.</li>
+<li>Соберите статический бинарник и проверьте, что он запускается на машине без установленной raylib.</li>
+</ul></div>
+
+<div class="pager"></div>
+</article>
+
+</div>
+</main>
+
+<script>
+/* ---- Оглавление строится из самих глав ---- */
+const chapters = [...document.querySelectorAll('.ch')];
+const tocList = document.getElementById('toc-list');
+let html = '', lastPart = null;
+chapters.forEach((ch,i)=>{
+  const part = ch.dataset.part;
+  if(part !== lastPart){ html += `<div class="part-label">${part}</div>`; lastPart = part; }
+  html += `<a href="#${ch.id}" data-i="${i}"><span class="n">${String(i+1).padStart(2,'0')}</span><span>${ch.dataset.title}</span></a>`;
+});
+tocList.innerHTML = html;
+const links = [...tocList.querySelectorAll('a')];
+
+/* ---- Подсветка C ---- */
+const KW = /^(if|else|for|while|do|switch|case|default|break|continue|return|goto|struct|union|enum|typedef|static|const|extern|inline|sizeof|void|int|float|double|char|short|long|signed|unsigned|bool|true|false|NULL)$/;
+const RE = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|(^[ \t]*#[a-z]+)|\b([A-Za-z_][A-Za-z0-9_]*)\b|\b(0[xX][0-9a-fA-F]+|\d+\.?\d*f?)\b/gm;
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+document.querySelectorAll('pre code').forEach(el=>{
+  const src = el.textContent;
+  el.innerHTML = esc(src).replace(RE,(m,cmt,str,pre,word,num)=>{
+    if(cmt) return `<span class="cmt">${m}</span>`;
+    if(str) return `<span class="str">${m}</span>`;
+    if(pre) return `<span class="pre">${m}</span>`;
+    if(num) return `<span class="num">${m}</span>`;
+    if(word){
+      if(KW.test(word)) return `<span class="kw">${m}</span>`;
+      if(/^[A-Z]/.test(word)) return `<span class="typ">${m}</span>`;
+    }
+    return m;
+  });
+});
+
+/* ---- Навигация ---- */
+const toc = document.getElementById('toc'), scrim = document.getElementById('scrim');
+function closeNav(){ toc.classList.remove('open'); scrim.classList.remove('open'); }
+document.getElementById('burger').onclick = ()=>{ toc.classList.toggle('open'); scrim.classList.toggle('open'); };
+scrim.onclick = closeNav;
+
+let cur = 0;
+function show(i, push){
+  i = Math.max(0, Math.min(chapters.length-1, i));
+  chapters.forEach(c=>c.classList.remove('show'));
+  chapters[i].classList.add('show');
+  links.forEach(a=>a.classList.remove('on'));
+  links[i].classList.add('on');
+  for(let k=0;k<=i;k++) links[k].classList.add('done');
+  cur = i;
+  if(push) history.replaceState(null,'','#'+chapters[i].id);
+  window.scrollTo({top:0,behavior:'instant'});
+  links[i].scrollIntoView({block:'nearest'});
+  closeNav();
+  drawPager();
+}
+function drawPager(){
+  const p = chapters[cur].querySelector('.pager');
+  if(!p) return;
+  const prev = chapters[cur-1], next = chapters[cur+1];
+  p.innerHTML =
+    (prev ? `<button data-go="${cur-1}"><span>Назад</span>${prev.dataset.title}</button>` : `<button disabled><span>Назад</span>Начало курса</button>`) +
+    (next ? `<button class="next" data-go="${cur+1}"><span>Дальше</span>${next.dataset.title}</button>` : `<button class="next" disabled><span>Дальше</span>Курс пройден</button>`);
+}
+document.addEventListener('click', e=>{
+  const a = e.target.closest('#toc a');
+  if(a){ e.preventDefault(); show(+a.dataset.i, true); return; }
+  const b = e.target.closest('.pager button[data-go]');
+  if(b) show(+b.dataset.go, true);
+});
+document.addEventListener('keydown', e=>{
+  if(e.target.tagName === 'INPUT') return;
+  if(e.key === 'ArrowRight') show(cur+1, true);
+  if(e.key === 'ArrowLeft')  show(cur-1, true);
+});
+const start = chapters.findIndex(c => '#'+c.id === location.hash);
+show(start >= 0 ? start : 0, false);
+</script>
+</body>
+</html>

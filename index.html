@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>raylib на русском — курс и справочник</title>
+<meta name="description" content="Бесплатный курс по программированию игр на raylib и C на русском языке, плюс справочник по всем функциям библиотеки.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F5F5; --card:#FFFFFF; --ink:#171717; --muted:#6E6E6E; --rule:#E2E2E2;
+  --blue:#00517C; --blue-soft:#E8F0F5;
+  --maroon:#BE2137; --maroon-soft:#FBEAEC;
+  --sans:"IBM Plex Sans",system-ui,sans-serif;
+  --cond:"IBM Plex Sans Condensed","IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:0 24px}
+
+header{padding:80px 0 40px}
+.eyebrow{font:500 12px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+h1{font:700 clamp(46px,9vw,92px)/0.9 var(--cond);letter-spacing:-.02em;margin:16px 0 0}
+h1 em{font-style:normal;color:var(--blue)}
+.lede{font-size:19px;max-width:56ch;color:#3A3A3A;margin:22px 0 0}
+.lede code{font:500 15px var(--mono);background:#EAEAEA;padding:1px 6px;border-radius:3px}
+
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:44px 0 0}
+.card{
+  display:block;text-decoration:none;color:inherit;
+  background:var(--card);border:1px solid var(--rule);border-radius:4px;
+  padding:26px 24px;position:relative;overflow:hidden;transition:transform .15s,border-color .15s;
+}
+.card:hover{transform:translateY(-2px);border-color:#B8B8B8}
+.card:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.card .bar{position:absolute;top:0;left:0;right:0;height:5px}
+.card.c-course .bar{background:var(--blue)}
+.card.c-sheet .bar{background:var(--maroon)}
+.card .tag{font:500 10.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:8px;display:block}
+.card h2{font:700 30px/1.05 var(--cond);letter-spacing:-.01em;margin:12px 0 8px}
+.card p{margin:0;font-size:14.5px;color:#484848;line-height:1.55}
+.card .go{display:inline-flex;align-items:center;gap:6px;margin-top:18px;font:500 13.5px var(--sans);color:var(--ink)}
+.card.c-course .go{color:var(--blue)}
+.card.c-sheet .go{color:var(--maroon)}
+.card .go svg{width:14px;height:14px;transition:transform .15s}
+.card:hover .go svg{transform:translateX(3px)}
+
+.meta{margin:52px 0 0;padding-top:28px;border-top:1px solid var(--rule);display:flex;gap:36px;flex-wrap:wrap}
+.meta div b{display:block;font:700 26px var(--cond);letter-spacing:-.01em}
+.meta div span{font-size:12.5px;color:var(--muted)}
+
+h3{font:600 20px/1.3 var(--cond);letter-spacing:-.01em;margin:56px 0 12px}
+.source-note{font-size:14.5px;color:#484848}
+.source-note a{color:var(--blue)}
+
+footer{margin-top:70px;padding:26px 0 60px;border-top:1px solid var(--rule);font-size:13px;color:var(--muted)}
+footer a{color:var(--ink)}
+
+@media (max-width:640px){
+  header{padding-top:52px}
+  .cards{grid-template-columns:1fr}
+  .meta{gap:24px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">C · 2D/3D-графика · без движка</div>
+    <h1>raylib<br><em>по-русски</em></h1>
+    <p class="lede">Два открытых ресурса для тех, кто учит игровое программирование на C: последовательный курс с объяснениями и живой справочник по всем функциям библиотеки. Оба сделаны как самодостаточные HTML-страницы — работают офлайн, без сборки и трекеров.</p>
+  </header>
+
+  <div class="cards">
+    <a class="card c-course" href="course.html">
+      <div class="bar"></div>
+      <span class="tag">20 глав · с нуля до релиза</span>
+      <h2>Курс</h2>
+      <p>От первого окна до собранного арканоида: игровой цикл, структуры вместо классов, коллизии, платформер с coyote time, звук, частицы и сборка под три платформы.</p>
+      <span class="go">Открыть курс <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+    <a class="card c-sheet" href="cheatsheet.html">
+      <div class="bar"></div>
+      <span class="tag">434 функции · живой поиск</span>
+      <h2>Справочник</h2>
+      <p>Все функции raylib и raymath с переводом на русский — по разделам, с поиском по имени или по смыслу. Сверено с исходниками raylib.h и raymath.h.</p>
+      <span class="go">Открыть справочник <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+  </div>
+
+  <div class="meta">
+    <div><b>20</b><span>глав курса</span></div>
+    <div><b>130</b><span>примеров кода</span></div>
+    <div><b>434</b><span>функции в справочнике</span></div>
+    <div><b>0</b><span>трекеров и рекламы</span></div>
+  </div>
+
+  <h3>Почему это существует</h3>
+  <p class="source-note">Полноценного курса по raylib на русском языке практически не было — библиотека нишевая, а официальная документация raylib принципиально состоит из одной шпаргалки и набора примеров на английском. Этот курс и справочник закрывают именно этот пробел. Исходная библиотека — <a href="https://github.com/raysan5/raylib" target="_blank" rel="noopener">raysan5/raylib</a>, лицензия zlib/libpng.</p>
+
+  <footer>
+    Сделано с помощью Claude. Ошибку нашли — правьте прямо в HTML или откройте issue в репозитории.
+  </footer>
+</div>
+</body>
+</html>
