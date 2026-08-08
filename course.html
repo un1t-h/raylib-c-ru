@@ -3115,6 +3115,7 @@ scrim.onclick = closeNav;
 
 let cur = 0;
 function show(i, push){
+  if(!Number.isFinite(i)) return;
   i = Math.max(0, Math.min(chapters.length-1, i));
   chapters.forEach(c=>c.classList.remove('show'));
   chapters[i].classList.add('show');
@@ -3137,7 +3138,7 @@ function drawPager(){
     (next ? `<button class="next" data-go="${cur+1}"><span>Дальше</span>${next.dataset.title}</button>` : `<button class="next" disabled><span>Дальше</span>Курс пройден</button>`);
 }
 document.addEventListener('click', e=>{
-  const a = e.target.closest('#toc a');
+  const a = e.target.closest('#toc-list a');
   if(a){ e.preventDefault(); show(+a.dataset.i, true); return; }
   const b = e.target.closest('.pager button[data-go]');
   if(b) show(+b.dataset.go, true);
