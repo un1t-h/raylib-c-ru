@@ -2,6 +2,8 @@
 
 Курс и справочник по программированию игр на **raylib + C** на русском языке.
 
+https://un1t-h.github.io/raylib-c-ru/
+
 - [`course.html`](course.html) — курс из 20 глав, от установки до собранной игры
 - [`cheatsheet.html`](cheatsheet.html) — справочник по 434 функциям raylib/raymath с поиском
 
